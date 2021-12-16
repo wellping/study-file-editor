@@ -1,12 +1,12 @@
-import React from 'react';
+import React from "react";
 import Form from "@rjsf/core";
 import { JSONSchema7 } from "json-schema";
-import './App.css';
+import "./App.css";
 
 function App() {
   const schema: JSONSchema7 = {
     title: "Test form",
-    type: "string"
+    type: "string",
   };
 
   return (
