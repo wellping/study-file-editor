@@ -1,10 +1,12 @@
 import React from "react";
-import Form from "@rjsf/core";
+import Form, { UiSchema } from "@rjsf/core";
 import { saveAs } from "file-saver";
 import { JSONSchema7 } from "json-schema";
 import "./App.css";
 
 const idRegex = "^\\w+$";
+const DATETIME_REGEX =
+  "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z$";
 
 const VALIDATE_BUTTON_ID = "button-validate";
 const VALIDATE_AND_EXPORT_BUTTON_ID = "button-export";
@@ -345,11 +347,29 @@ function App() {
       studyInfo: {
         title: "Study Info",
         type: "object",
-        required: ["id"],
+        required: ["id", "startDate", "endDate"],
         properties: {
           id: {
             type: "string",
             title: "Study ID",
+          },
+
+          // Note that for `startDate` and `endDate`,
+          // - we cannot use `format: datetime` because the time stored in JSON is different from the time shown (due to timezone)
+          // - we cannot use `format: alt-datetime` because after loading a JSON file, the value is not populated in the field.
+          startDate: {
+            type: "string",
+            title: "Study Start Date",
+            description:
+              'The first ping will be sent after this time. Please enter the date in the format like "2020-03-10T08:00:00.000Z".',
+            pattern: DATETIME_REGEX,
+          },
+          endDate: {
+            type: "string",
+            title: "Study End Date",
+            description:
+              'No ping will be sent after this time. Please enter the date in the format like "2020-03-10T08:00:00.000Z".',
+            pattern: DATETIME_REGEX,
           },
         },
       },
@@ -398,6 +418,8 @@ function App() {
 
     required: ["studyInfo", "streams"],
   };
+
+  const uiSchema: UiSchema = {};
 
   return (
     <>
@@ -453,6 +475,7 @@ function App() {
 
           <Form
             schema={schema}
+            uiSchema={uiSchema}
             formData={formData}
             onChange={(e) => {
               setChoicesListsIds(
