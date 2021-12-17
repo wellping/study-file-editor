@@ -558,7 +558,7 @@ function App() {
                   console.log(wellPingStudyFile);
 
                   if (typeOfSubmit === VALIDATE_AND_EXPORT_BUTTON_ID) {
-                    const fileName = `well-ping-${
+                    const fileName = `wellping-export-${
                       wellPingStudyFile.studyInfo.id
                     }-${new Date().getTime()}`;
                     saveJSONFile(fileName, formData);
@@ -645,7 +645,7 @@ function App() {
                   type="button"
                   className="btn btn-success"
                   onClick={() => {
-                    const fileName = `study-${
+                    const fileName = `wellping-editor-${
                       (formData as any)?.studyInfo?.id ?? "unknownId"
                     }-${new Date().getTime()}`;
                     saveJSONFile(fileName, formData);
