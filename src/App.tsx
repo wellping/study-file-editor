@@ -3,9 +3,9 @@ import Form from "@rjsf/core";
 import "./App.css";
 import { schema } from "./schema";
 
-const validateButtonID = "button-validate";
-const validateAndSaveButtonID = "button-save";
-const validateAndExportButtonID = "button-export";
+const VALIDATE_BUTTON_ID = "button-validate";
+const VALIDATE_AND_SAVE_BUTTON_ID = "button-save";
+const VALIDATE_AND_EXPORT_BUTTON_ID = "button-export";
 
 function App() {
   const [formData, setFormData] = React.useState(null);
@@ -59,12 +59,36 @@ function App() {
       <div className="container">
         <div className="App">
           <h1>Well Ping Study File Editor</h1>
-          <p>Please use this editor on a desktop browser.</p>
+          <p>Please use this editor in Chrome on a desktop computer.</p>
 
           <Form
             schema={schema}
             formData={formData}
             onChange={(e) => setFormData(e.formData)}
+            onSubmit={({ formData }, e) => {
+              // Ugly hack :(
+              // https://stackoverflow.com/a/33264162/2603230
+              const typeOfSubmit = document.activeElement?.id;
+              switch (typeOfSubmit) {
+                case VALIDATE_BUTTON_ID:
+                  // Do nothing. We don't need to submit.
+                  break;
+
+                case VALIDATE_AND_SAVE_BUTTON_ID:
+                  // TODO: save
+                  alert("save!");
+                  break;
+
+                case VALIDATE_AND_EXPORT_BUTTON_ID:
+                  // TODO: export
+                  alert("export!");
+                  break;
+
+                default:
+                  // Do nothing. This might happen by e.g., pressing "Enter".
+                  break;
+              }
+            }}
             noHtml5Validate
             liveValidate={liveValidate}
           >
@@ -73,7 +97,7 @@ function App() {
               <div className="right-button">
                 <button
                   type="submit"
-                  id={validateButtonID}
+                  id={VALIDATE_BUTTON_ID}
                   className="btn btn-primary"
                 >
                   Validate
@@ -104,7 +128,7 @@ function App() {
               <div className="right-button">
                 <button
                   type="submit"
-                  id={validateAndSaveButtonID}
+                  id={VALIDATE_AND_SAVE_BUTTON_ID}
                   className="btn btn-success"
                 >
                   Validate and
@@ -115,7 +139,7 @@ function App() {
               <div className="right-button">
                 <button
                   type="submit"
-                  id={validateAndExportButtonID}
+                  id={VALIDATE_AND_EXPORT_BUTTON_ID}
                   className="btn btn-danger"
                 >
                   Validate and
