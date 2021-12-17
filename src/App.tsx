@@ -259,8 +259,16 @@ function App() {
             title: "Question ID",
             pattern: ID_REGEX,
           },
-          question: { type: "string", title: "Question title" },
-          description: { type: "string", title: "Question description" },
+          question: {
+            type: "string",
+            title: "Question title",
+            format: "textarea",
+          },
+          description: {
+            type: "string",
+            title: "Question description",
+            format: "textarea",
+          },
           type: {
             type: "string",
             title: "Question type",
