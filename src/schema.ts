@@ -52,10 +52,19 @@ export const schema: JSONSchema7 = {
     },
 
     choiceQuestion_choices: {
-      type: "array",
-      items: {
-        type: "string",
-      },
+      oneOf: [
+        {
+          title: "List",
+          type: "array",
+          items: {
+            type: "string",
+          },
+        },
+        {
+          title: "Predefined List Name",
+          type: "string",
+        },
+      ],
     },
     choiceQuestion_specialCasesStartId: {
       type: "array",

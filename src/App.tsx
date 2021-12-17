@@ -12,6 +12,7 @@ function App() {
         schema={schema}
         formData={formData}
         onChange={(e) => setFormData(e.formData)}
+        noHtml5Validate
       />
 
       <pre>{JSON.stringify(formData, null, 2)}</pre>
