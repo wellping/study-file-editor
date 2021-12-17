@@ -87,6 +87,7 @@ function App() {
         items: {
           type: "string",
         },
+        uniqueItems: true,
         minItems: 1,
       },
       choiceQuestion_choices: {
