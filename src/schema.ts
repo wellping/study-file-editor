@@ -1,5 +1,7 @@
 import { JSONSchema7 } from "json-schema";
 
+const idRegex = "^\\w+$";
+
 export const schema: JSONSchema7 = {
   title: "Study File",
   type: "object",
@@ -119,6 +121,81 @@ export const schema: JSONSchema7 = {
       required: ["choices"],
     },
 
+    yesNoQuestion: {
+      properties: {
+        type: {
+          enum: ["YesNo"],
+        },
+        branchStartId: {
+          type: "object",
+          title: "Branches",
+          properties: {
+            yes: {
+              title: 'If the user answered "Yes"',
+              $ref: "#/definitions/listOfQuestions",
+            },
+            no: {
+              title: 'If the user answered "No"',
+              $ref: "#/definitions/listOfQuestions",
+            },
+          },
+        },
+        addFollowupStream: {
+          type: "object",
+          properties: {
+            yes: {
+              type: "string",
+            },
+          },
+        },
+      },
+      required: [],
+    },
+
+    multipleTextQuestion: {
+      properties: {
+        type: {
+          enum: ["MultipleText"],
+        },
+        indexName: {
+          type: "string",
+          title: "Index's placeholder in enclosing question ID",
+          pattern: idRegex,
+        },
+        variableName: {
+          type: "string",
+          title: "Answer text's placeholder in enclosing question ID",
+          pattern: idRegex,
+        },
+        placeholder: {
+          type: "string",
+        },
+        keyboardType: {
+          // TODO: enum
+          type: "string",
+        },
+        choices: {
+          $ref: "#/definitions/choiceQuestion_choices",
+        },
+        forceChoice: {
+          type: "boolean",
+        },
+        alwaysShowChoices: {
+          type: "boolean",
+        },
+        max: {
+          type: "integer",
+        },
+        maxMinus: {
+          type: "string",
+        },
+        repeatedQuestions: {
+          $ref: "#/definitions/listOfQuestions",
+        },
+      },
+      required: ["indexName", "variableName", "max"],
+    },
+
     question: {
       type: "object",
       required: ["id", "question", "type"],
@@ -154,8 +231,21 @@ export const schema: JSONSchema7 = {
             {
               $ref: "#/definitions/choicesWithMultipleAnswersQuestion",
             },
+            {
+              $ref: "#/definitions/yesNoQuestion",
+            },
+            {
+              $ref: "#/definitions/multipleTextQuestion",
+            },
           ],
         },
+      },
+    },
+
+    listOfQuestions: {
+      type: "array",
+      items: {
+        $ref: "#/definitions/question",
       },
     },
   },
@@ -177,10 +267,7 @@ export const schema: JSONSchema7 = {
       // https://stackoverflow.com/a/27375654/2603230
       additionalProperties: {
         title: "Stream",
-        type: "array",
-        items: {
-          $ref: "#/definitions/question",
-        },
+        $ref: "#/definitions/listOfQuestions",
       },
     },
     extraData: {},
