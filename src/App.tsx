@@ -33,6 +33,9 @@ function App() {
           <div id="navbar" className="navbar-collapse collapse">
             <ul className="nav navbar-nav">
               <li>
+                <a href="#page-title">→ Top</a>
+              </li>
+              <li>
                 <a href="#root_studyInfo">→ Study Info</a>
               </li>
               <li>
@@ -57,7 +60,7 @@ function App() {
       </nav>
       <div className="container">
         <div className="App">
-          <h1>Well Ping Study File Editor</h1>
+          <h1 id="page-title">Well Ping Study File Editor</h1>
           <p>Please use this editor in Chrome on a desktop computer.</p>
 
           <Form
