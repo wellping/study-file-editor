@@ -32,29 +32,47 @@ function mergeQuestionsList(
   Object.assign(questionsList, subQuestionsList);
 }
 
+function flattenSubquestions(
+  editorQuestion: EditorQuestion,
+  subquestionsKey: string,
+  firstSubquestionsIDKey: string,
+  questionsList: WellPingTypes.QuestionsList,
+  editorReusableQuestionBlocks: EditorReusableQuestionBlocks,
+): any {
+  if (
+    !(subquestionsKey in editorQuestion) ||
+    editorQuestion[subquestionsKey].length === 0
+  ) {
+    delete editorQuestion[subquestionsKey];
+    return editorQuestion;
+  } else {
+    const firstSubQuestionId = editorQuestion[subquestionsKey][0].id;
+
+    const subQuestionsList = getWellPingQuestionsListFromEditorQuestionsList(
+      editorQuestion[subquestionsKey],
+      editorReusableQuestionBlocks,
+    );
+    mergeQuestionsList(questionsList, subQuestionsList);
+
+    delete editorQuestion[subquestionsKey];
+    const question = editorQuestion;
+    question[firstSubquestionsIDKey] = firstSubQuestionId;
+    return question;
+  }
+}
+
 function processMultipleTextQuestion(
   editorMultipleTextQuestion: EditorQuestion,
   questionsList: WellPingTypes.QuestionsList,
   editorReusableQuestionBlocks: EditorReusableQuestionBlocks,
 ): WellPingTypes.MultipleTextQuestion {
-  if (!("repeatedQuestions" in editorMultipleTextQuestion)) {
-    return editorMultipleTextQuestion as WellPingTypes.MultipleTextQuestion;
-  } else {
-    const firstSubQuestionId =
-      editorMultipleTextQuestion.repeatedQuestions[0].id;
-
-    const subQuestionsList = getWellPingQuestionsListFromEditorQuestionsList(
-      editorMultipleTextQuestion.repeatedQuestions,
-      editorReusableQuestionBlocks,
-    );
-    mergeQuestionsList(questionsList, subQuestionsList);
-
-    delete editorMultipleTextQuestion.repeatedQuestions;
-    const multipleTextQuestion: WellPingTypes.MultipleTextQuestion =
-      editorMultipleTextQuestion;
-    multipleTextQuestion.repeatedItemStartId = firstSubQuestionId;
-    return multipleTextQuestion;
-  }
+  return flattenSubquestions(
+    editorMultipleTextQuestion,
+    "repeatedQuestions",
+    "repeatedItemStartId",
+    questionsList,
+    editorReusableQuestionBlocks,
+  );
 }
 
 function getWellPingQuestionsListFromEditorQuestionsList(
