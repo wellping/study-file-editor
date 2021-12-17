@@ -268,12 +268,31 @@ export const schema: JSONSchema7 = {
       },
     },
 
+    question_or_questionBlock: {
+      oneOf: [
+        {
+          title: "Question",
+          $ref: "#/definitions/question",
+        },
+        {
+          title: "Question Block ID",
+          // For some reason we have to make it into an object instead of just a string
+          type: "object",
+          properties: {
+            questionBlockId: {
+              type: "string",
+            },
+          },
+        },
+      ],
+    },
+
     listOfQuestions: {
       type: "array",
       title: "Questions",
       uniqueItems: true,
       items: {
-        $ref: "#/definitions/question",
+        $ref: "#/definitions/question_or_questionBlock",
       },
     },
 
@@ -283,7 +302,7 @@ export const schema: JSONSchema7 = {
       uniqueItems: true,
       minItems: 1,
       items: {
-        $ref: "#/definitions/question",
+        $ref: "#/definitions/question_or_questionBlock",
       },
     },
   },
