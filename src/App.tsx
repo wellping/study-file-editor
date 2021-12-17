@@ -3,6 +3,7 @@ import Form, { UiSchema } from "@rjsf/core";
 import { saveAs } from "file-saver";
 import { JSONSchema7 } from "json-schema";
 import "./App.css";
+import { getWellPingStudyFileJSONFromEditorJSON } from "./helper";
 
 const ID_REGEX = "^\\w+$";
 const DATETIME_REGEX =
@@ -24,6 +25,8 @@ function getArrayAndEmptyStringIfEmpty(list: string[]): string[] {
 // TODO: VALIDATE TO MAKE SURE THERE'S NO DUPLICATE QUESTION ID (maybe do that in `onSubmit` as we export the new JSON for well ping because that way live validation wouldn't be slowed by this and we don't have to write a separate logic for checking ID duplication in our JSON format (which also contaisn reusable blocks to check))
 
 function App() {
+  // Note: this form data JSON is different from the Well Ping study file JSON (to facilicate easier user input).
+  // Conversion with `getWellPingStudyFileJSONFromEditorJSON` is needed to get the Well Ping study file JSON.
   const [formData, setFormData] = React.useState(null);
 
   const [liveValidate, setLiveValidate] = React.useState(true);
@@ -535,12 +538,12 @@ function App() {
               const typeOfSubmit = document.activeElement?.id;
               switch (typeOfSubmit) {
                 case VALIDATE_BUTTON_ID:
-                  // Do nothing. We don't need to submit.
-                  break;
-
                 case VALIDATE_AND_EXPORT_BUTTON_ID:
+                  const wellPingStudyFile =
+                    getWellPingStudyFileJSONFromEditorJSON(formData);
+
                   // TODO: export
-                  alert("export!");
+                  alert(JSON.stringify(wellPingStudyFile));
                   break;
 
                 default:
