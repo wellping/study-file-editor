@@ -45,12 +45,15 @@ function parseLoadedEditorFileString(loadedEditorFile: string): any {
   return parsedLoadedEditorFile;
 }
 
-function getArrayAndEmptyStringIfEmpty(list: string[]): string[] {
-  if (list.length === 0) {
+function getObjectKeysAsArrayAndEmptyStringIfEmpty(
+  object: object | null | undefined,
+): string[] {
+  const keys = Object.keys(object ?? {});
+  if (keys.length === 0) {
     // The enum cannot be 0 length
     return [""];
   } else {
-    return list;
+    return keys;
   }
 }
 
@@ -67,18 +70,31 @@ function saveJSONFile(fileName: string, object: any) {
 }
 
 function App() {
+  const [choicesListsIds, setChoicesListsIds] = React.useState<string[]>(
+    getObjectKeysAsArrayAndEmptyStringIfEmpty(undefined),
+  );
+  const [questionBlockIds, setQuestionBlockIds] = React.useState<string[]>(
+    getObjectKeysAsArrayAndEmptyStringIfEmpty(undefined),
+  );
+
   // Note: this form data JSON is different from the Well Ping study file JSON (to facilicate easier user input).
   // Conversion with `getWellPingStudyFileJSONFromEditorJSON` is needed to get the Well Ping study file JSON.
-  const [formData, setFormData] = React.useState(null);
+  const [formData, setFormData] = React.useState<any>(null);
+  React.useEffect(() => {
+    console.log(formData?.extraData?.reusableChoices);
+    setChoicesListsIds(
+      getObjectKeysAsArrayAndEmptyStringIfEmpty(
+        formData?.extraData?.reusableChoices,
+      ),
+    );
+    setQuestionBlockIds(
+      getObjectKeysAsArrayAndEmptyStringIfEmpty(
+        formData?.reusableQuestionBlocks,
+      ),
+    );
+  }, [formData]); // Only re-run the effect if `formData` changes.
 
-  const [liveValidate, setLiveValidate] = React.useState(true);
-
-  const [choicesListsIds, setChoicesListsIds] = React.useState(
-    getArrayAndEmptyStringIfEmpty([]),
-  );
-  const [questionBlockIds, setQuestionBlockIds] = React.useState(
-    getArrayAndEmptyStringIfEmpty([]),
-  );
+  const [liveValidate, setLiveValidate] = React.useState<boolean>(true);
 
   const schema: JSONSchema7 = {
     title: "Study File",
@@ -561,17 +577,6 @@ function App() {
             uiSchema={uiSchema}
             formData={formData}
             onChange={(e) => {
-              setChoicesListsIds(
-                getArrayAndEmptyStringIfEmpty(
-                  Object.keys((e.formData as any).extraData.reusableChoices),
-                ),
-              );
-              setQuestionBlockIds(
-                getArrayAndEmptyStringIfEmpty(
-                  Object.keys((e.formData as any).reusableQuestionBlocks),
-                ),
-              );
-
               setFormData(e.formData);
             }}
             onSubmit={({ formData }, e) => {
@@ -727,6 +732,13 @@ function App() {
           <div style={{ marginTop: 30 }}>
             <h2>Form JSON</h2>
             <pre id="study-file-json">{JSON.stringify(formData, null, 2)}</pre>
+
+            <pre>
+              choicesListsIds: {JSON.stringify(choicesListsIds, null, 2)}
+            </pre>
+            <pre>
+              questionBlockIds: {JSON.stringify(questionBlockIds, null, 2)}
+            </pre>
           </div>
         </div>
       </div>
