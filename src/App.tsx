@@ -3,6 +3,10 @@ import Form from "@rjsf/core";
 import "./App.css";
 import { schema } from "./schema";
 
+const validateButtonID = "button-validate";
+const validateAndSaveButtonID = "button-save";
+const validateAndExportButtonID = "button-export";
+
 function App() {
   const [formData, setFormData] = React.useState(null);
 
@@ -30,17 +34,6 @@ function App() {
           <div id="navbar" className="navbar-collapse collapse">
             <ul className="nav navbar-nav">
               <li>
-                <a href="#">Load Study File</a>
-              </li>
-              <li>
-                <a href="#">Save Study File</a>
-              </li>
-              <li>
-                <a href="#">Export for Well Ping</a>
-              </li>
-            </ul>
-            <ul className="nav navbar-nav navbar-right">
-              <li>
                 <a href="#root_studyInfo__title">→ Study Info</a>
               </li>
               <li>
@@ -52,7 +45,12 @@ function App() {
               <li>
                 <a href="#">→ Questions Blocks</a>
               </li>
+              <li>
+                <a href="#study-file-json">→ JSON</a>
+              </li>
             </ul>
+            {/*<ul className="nav navbar-nav navbar-right">
+            </ul>*/}
           </div>
         </div>
       </nav>
@@ -68,24 +66,18 @@ function App() {
             noHtml5Validate
             liveValidate={liveValidate}
           >
-            <div
-              style={{
-                position: "fixed",
-                right: 20,
-                top: 80,
-                textAlign: "right",
-              }}
-            >
-              <div>
-                <button type="submit" className="btn btn-primary">
+            {/* Notice that we cannot programmitcally trigger validate now: https://github.com/rjsf-team/react-jsonschema-form/issues/246 */}
+            <div id="right-toolbar">
+              <div className="right-button">
+                <button
+                  type="submit"
+                  id={validateButtonID}
+                  className="btn btn-primary"
+                >
                   Validate
                 </button>
               </div>
-              <div
-                style={{
-                  marginTop: 10,
-                }}
-              >
+              <div className="right-button">
                 <button
                   type="button"
                   className="btn btn-warning"
@@ -101,10 +93,43 @@ function App() {
                   if the page is slow)
                 </p>
               </div>
+              <div style={{ marginTop: 30 }}></div>
+              <div className="right-button">
+                <button type="button" className="btn">
+                  Load File
+                </button>
+              </div>
+              <div className="right-button">
+                <button
+                  type="submit"
+                  id={validateAndSaveButtonID}
+                  className="btn btn-success"
+                >
+                  Validate and
+                  <br />
+                  Save File
+                </button>
+              </div>
+              <div className="right-button">
+                <button
+                  type="submit"
+                  id={validateAndExportButtonID}
+                  className="btn btn-danger"
+                >
+                  Validate and
+                  <br />
+                  Export for
+                  <br />
+                  Well Ping
+                </button>
+              </div>
             </div>
           </Form>
 
-          <pre>{JSON.stringify(formData, null, 2)}</pre>
+          <div style={{ marginTop: 30 }}>
+            <h2>Form JSON</h2>
+            <pre id="study-file-json">{JSON.stringify(formData, null, 2)}</pre>
+          </div>
         </div>
       </div>
     </>
