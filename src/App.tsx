@@ -643,7 +643,7 @@ function App() {
                 <button
                   type="submit"
                   id={VALIDATE_AND_EXPORT_BUTTON_ID}
-                  className="btn"
+                  className="btn btn-default"
                 >
                   Validate and
                   <br />
