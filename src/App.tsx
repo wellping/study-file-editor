@@ -23,6 +23,18 @@ function getArrayAndEmptyStringIfEmpty(list: string[]): string[] {
   }
 }
 
+function saveJSONFile(fileName: string, object: any) {
+  // https://stackoverflow.com/a/45594892/2603230
+
+  const fileNameWithExtension = `${fileName}.json`;
+
+  const fileToSave = new Blob([JSON.stringify(object)], {
+    type: "application/json",
+  });
+
+  saveAs(fileToSave, fileNameWithExtension);
+}
+
 // TODO: VALIDATE TO MAKE SURE THERE'S NO DUPLICATE QUESTION ID (maybe do that in `onSubmit` as we export the new JSON for well ping because that way live validation wouldn't be slowed by this and we don't have to write a separate logic for checking ID duplication in our JSON format (which also contaisn reusable blocks to check))
 
 function App() {
@@ -543,8 +555,14 @@ function App() {
                   const wellPingStudyFile =
                     getWellPingStudyFileFromEditorObject(formData);
 
-                  // TODO: export
-                  alert(JSON.stringify(wellPingStudyFile, null, 2));
+                  console.log(wellPingStudyFile);
+
+                  if (typeOfSubmit === VALIDATE_AND_EXPORT_BUTTON_ID) {
+                    const fileName = `well-ping-${
+                      wellPingStudyFile.studyInfo.id
+                    }-${new Date().getTime()}`;
+                    saveJSONFile(fileName, formData);
+                  }
                   break;
 
                 default:
@@ -627,17 +645,10 @@ function App() {
                   type="button"
                   className="btn btn-success"
                   onClick={() => {
-                    // https://stackoverflow.com/a/45594892/2603230
-
                     const fileName = `study-${
                       (formData as any)?.studyInfo?.id ?? "unknownId"
-                    }-${new Date().getTime()}.json`;
-
-                    const fileToSave = new Blob([JSON.stringify(formData)], {
-                      type: "application/json",
-                    });
-
-                    saveAs(fileToSave, fileName);
+                    }-${new Date().getTime()}`;
+                    saveJSONFile(fileName, formData);
                   }}
                 >
                   Save File

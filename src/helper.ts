@@ -122,8 +122,6 @@ function getWellPingStreamsFromEditorStreams(
 export function getWellPingStudyFileFromEditorObject(
   editorObject: any,
 ): WellPingTypes.StudyFile {
-  console.warn(__DEV__);
-
   const studyInfo: WellPingTypes.StudyInfo = editorObject.studyInfo;
 
   const streams: WellPingTypes.Streams = getWellPingStreamsFromEditorStreams(
@@ -138,8 +136,5 @@ export function getWellPingStudyFileFromEditorObject(
     streams,
     extraData,
   };
-
-  console.log(studyFile);
-
   return studyFile;
 }
