@@ -1,17 +1,20 @@
 import React from "react";
 import Form from "@rjsf/core";
-import { JSONSchema7 } from "json-schema";
 import "./App.css";
+import { schema } from "./schema";
 
 function App() {
-  const schema: JSONSchema7 = {
-    title: "Test form",
-    type: "string",
-  };
+  const [formData, setFormData] = React.useState(null);
 
   return (
     <div className="App">
-      <Form schema={schema} />
+      <Form
+        schema={schema}
+        formData={formData}
+        onChange={(e) => setFormData(e.formData)}
+      />
+
+      <pre>{JSON.stringify(formData, null, 2)}</pre>
     </div>
   );
 }
