@@ -80,19 +80,24 @@ function App() {
   // Note: this form data JSON is different from the Well Ping study file JSON (to facilicate easier user input).
   // Conversion with `getWellPingStudyFileJSONFromEditorJSON` is needed to get the Well Ping study file JSON.
   const [formData, setFormData] = React.useState<any>(null);
-  React.useEffect(() => {
-    console.log(formData?.extraData?.reusableChoices);
+
+  // Notice that we have use this instead of `useEffects` because we want
+  // `setChoicesListsIds` and `setQuestionBlockIds` to be done before
+  // `setFormData`.
+  function updateFormData(newFormData: any) {
     setChoicesListsIds(
       getObjectKeysAsArrayAndEmptyStringIfEmpty(
-        formData?.extraData?.reusableChoices,
+        newFormData?.extraData?.reusableChoices,
       ),
     );
     setQuestionBlockIds(
       getObjectKeysAsArrayAndEmptyStringIfEmpty(
-        formData?.reusableQuestionBlocks,
+        newFormData?.reusableQuestionBlocks,
       ),
     );
-  }, [formData]); // Only re-run the effect if `formData` changes.
+
+    setFormData(newFormData);
+  }
 
   const [liveValidate, setLiveValidate] = React.useState<boolean>(true);
 
@@ -577,7 +582,7 @@ function App() {
             uiSchema={uiSchema}
             formData={formData}
             onChange={(e) => {
-              setFormData(e.formData);
+              updateFormData(e.formData);
             }}
             onSubmit={({ formData }, e) => {
               // Ugly hack :(
@@ -668,7 +673,7 @@ function App() {
                         try {
                           const loadedFormData =
                             parseLoadedEditorFileString(content);
-                          setFormData(loadedFormData);
+                          updateFormData(loadedFormData);
                         } catch (error) {
                           alert(error);
                         }
