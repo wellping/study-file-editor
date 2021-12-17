@@ -1,5 +1,6 @@
 import React from "react";
 import Form from "@rjsf/core";
+import { saveAs } from "file-saver";
 import { JSONSchema7 } from "json-schema";
 import "./App.css";
 
@@ -520,7 +521,23 @@ function App() {
                 </button>
               </div>
               <div className="right-button">
-                <button type="submit" className="btn btn-success">
+                <button
+                  type="button"
+                  className="btn btn-success"
+                  onClick={() => {
+                    // https://stackoverflow.com/a/45594892/2603230
+
+                    const fileName = `study-${
+                      (formData as any)?.studyInfo?.id ?? "unknownId"
+                    }-${new Date().getTime()}.json`;
+
+                    const fileToSave = new Blob([JSON.stringify(formData)], {
+                      type: "application/json",
+                    });
+
+                    saveAs(fileToSave, fileName);
+                  }}
+                >
                   Save File
                 </button>
               </div>
