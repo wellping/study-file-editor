@@ -74,8 +74,9 @@ export const schema: JSONSchema7 = {
           choice: {
             type: "string",
           },
-          questionId: {
-            type: "string",
+          questions: {
+            title: "Questions to show",
+            $ref: "#/definitions/listOfNonEmptyQuestions",
           },
         },
       },
