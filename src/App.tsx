@@ -14,6 +14,37 @@ const NON_EMPTY_REGEX = "(.|\\s)*\\S(.|\\s)*"; // https://stackoverflow.com/a/45
 const VALIDATE_BUTTON_ID = "button-validate";
 const VALIDATE_AND_EXPORT_BUTTON_ID = "button-export";
 
+const WELLPING_EDITOR_SAVE_INFO_KEY = "_wellpingEditor";
+type WellpingEditorSaveInfo = {
+  editorVersion: string;
+};
+const WELLPING_EDITOR_VERSION_VALUE = "0.1";
+const WELLPING_EDITOR_SAVE_INFO: WellpingEditorSaveInfo = {
+  editorVersion: WELLPING_EDITOR_VERSION_VALUE,
+};
+const WELLPING_EDITOR_SAVE_INFO_ENCLOSED = {
+  [WELLPING_EDITOR_SAVE_INFO_KEY]: WELLPING_EDITOR_SAVE_INFO,
+};
+function parseLoadedEditorFileString(loadedEditorFile: string): any {
+  const parsedLoadedEditorFile = JSON.parse(loadedEditorFile);
+
+  if (!(WELLPING_EDITOR_SAVE_INFO_KEY in parsedLoadedEditorFile)) {
+    throw new Error("The loaded file is not a Well Ping Editor File!");
+  }
+
+  const loadedFileSaveInfo: WellpingEditorSaveInfo =
+    parsedLoadedEditorFile[WELLPING_EDITOR_SAVE_INFO_KEY];
+  if (loadedFileSaveInfo.editorVersion !== WELLPING_EDITOR_VERSION_VALUE) {
+    throw new Error(
+      "The loaded file is saved in an earlier version of Well Ping Study File Editor!",
+    );
+  }
+
+  delete parsedLoadedEditorFile[WELLPING_EDITOR_SAVE_INFO_KEY];
+
+  return parsedLoadedEditorFile;
+}
+
 function getArrayAndEmptyStringIfEmpty(list: string[]): string[] {
   if (list.length === 0) {
     // The enum cannot be 0 length
@@ -560,7 +591,7 @@ function App() {
                       const fileName = `wellping-export-${
                         wellPingStudyFile.studyInfo.id
                       }-${new Date().getTime()}`;
-                      saveJSONFile(fileName, formData);
+                      saveJSONFile(fileName, wellPingStudyFile);
                     }
                   } catch (error) {
                     alert(error);
@@ -629,9 +660,13 @@ function App() {
 
                       reader.onload = () => {
                         const content = reader.result as string;
-                        //console.log(content);
-                        //console.log(JSON.parse(content));
-                        setFormData(JSON.parse(content));
+                        try {
+                          const loadedFormData =
+                            parseLoadedEditorFileString(content);
+                          setFormData(loadedFormData);
+                        } catch (error) {
+                          alert(error);
+                        }
                       };
 
                       reader.readAsText(file);
@@ -650,7 +685,10 @@ function App() {
                     const fileName = `wellping-editor-${
                       (formData as any)?.studyInfo?.id ?? "unknownId"
                     }-${new Date().getTime()}`;
-                    saveJSONFile(fileName, formData);
+                    saveJSONFile(fileName, {
+                      ...WELLPING_EDITOR_SAVE_INFO_ENCLOSED,
+                      ...(formData as any),
+                    });
                   }}
                 >
                   Save File
