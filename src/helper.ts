@@ -9,26 +9,27 @@ type EditorReusableQuestionBlocks = {
   [questionBlockKey: string]: EditorQuestionsList;
 };
 
+function getDuplicatedQuestionIDsError(duplicatedQuestionIDs: string[]) {
+  return new Error(
+    `Duplicated question IDs: "${duplicatedQuestionIDs.join('", "')}"!`,
+  );
+}
+
 function mergeQuestionsList(
   questionsList: WellPingTypes.QuestionsList,
   subQuestionsList: WellPingTypes.QuestionsList,
 ) {
-  const prevQuestionsListLength = Object.keys(questionsList).length;
-  const subQuestionsListLength = Object.keys(subQuestionsList).length;
+  const questionsListIDs = Object.keys(questionsList);
+  const subQuestionsListIDs = Object.keys(subQuestionsList);
+
+  const duplicatedIDs = questionsListIDs.filter((value) =>
+    subQuestionsListIDs.includes(value),
+  );
+  if (duplicatedIDs.length > 0) {
+    throw getDuplicatedQuestionIDsError(duplicatedIDs);
+  }
 
   Object.assign(questionsList, subQuestionsList);
-
-  const newQuestionsListLength = Object.keys(questionsList).length;
-
-  if (
-    newQuestionsListLength ===
-    prevQuestionsListLength + subQuestionsListLength
-  ) {
-    // We have correctly merged two list (i.e., no duplicated IDs)
-    return;
-  } else {
-    throw new Error("Duplicated question IDs!");
-  }
 }
 
 function processMultipleTextQuestion(
@@ -78,6 +79,11 @@ function getWellPingQuestionsListFromEditorQuestionsList(
   for (let i = 0; i < editorQuestionsList.length; i++) {
     const editorQuestion = editorQuestionsList[i];
     const questionId: WellPingTypes.QuestionId = editorQuestion.id;
+
+    if (questionId in questionsList) {
+      throw getDuplicatedQuestionIDsError([questionId]);
+    }
+
     const nextQuestionId: WellPingTypes.QuestionId | null =
       i < editorQuestionsList.length - 1 ? editorQuestionsList[i + 1].id : null;
 

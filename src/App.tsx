@@ -35,8 +35,6 @@ function saveJSONFile(fileName: string, object: any) {
   saveAs(fileToSave, fileNameWithExtension);
 }
 
-// TODO: VALIDATE TO MAKE SURE THERE'S NO DUPLICATE QUESTION ID (maybe do that in `onSubmit` as we export the new JSON for well ping because that way live validation wouldn't be slowed by this and we don't have to write a separate logic for checking ID duplication in our JSON format (which also contaisn reusable blocks to check))
-
 function App() {
   // Note: this form data JSON is different from the Well Ping study file JSON (to facilicate easier user input).
   // Conversion with `getWellPingStudyFileJSONFromEditorJSON` is needed to get the Well Ping study file JSON.
@@ -552,16 +550,20 @@ function App() {
               switch (typeOfSubmit) {
                 case VALIDATE_BUTTON_ID:
                 case VALIDATE_AND_EXPORT_BUTTON_ID:
-                  const wellPingStudyFile =
-                    getWellPingStudyFileFromEditorObject(formData);
+                  try {
+                    const wellPingStudyFile =
+                      getWellPingStudyFileFromEditorObject(formData);
 
-                  console.log(wellPingStudyFile);
+                    console.log(wellPingStudyFile);
 
-                  if (typeOfSubmit === VALIDATE_AND_EXPORT_BUTTON_ID) {
-                    const fileName = `wellping-export-${
-                      wellPingStudyFile.studyInfo.id
-                    }-${new Date().getTime()}`;
-                    saveJSONFile(fileName, formData);
+                    if (typeOfSubmit === VALIDATE_AND_EXPORT_BUTTON_ID) {
+                      const fileName = `wellping-export-${
+                        wellPingStudyFile.studyInfo.id
+                      }-${new Date().getTime()}`;
+                      saveJSONFile(fileName, formData);
+                    }
+                  } catch (error) {
+                    alert(error);
                   }
                   break;
 
