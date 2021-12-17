@@ -317,6 +317,9 @@ function App() {
             required: ["questionBlockId"],
           },
         ],
+
+        // This is so that initially the value in JSON would also be `{}` (instead of `null` sometimes).
+        default: {},
       },
 
       listOfQuestions: {
