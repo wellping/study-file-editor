@@ -4978,9 +4978,9 @@ ejs@^3.1.6:
     jake "^10.6.1"
 
 electron-to-chromium@^1.4.17:
-  version "1.4.21"
-  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.21.tgz#edf7d9477980079d840570c34ab4c4a5bef4c2bd"
-  integrity sha512-T04U2ciApGbm+dESFEBbewi2Xt0Dgyww8M4n4sOt9lnmFuYbaHEDWCROkx4jvAZDUWWry9YOdnAs+7468q80Qg==
+  version "1.4.24"
+  resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.24.tgz#9cf8a92d5729c480ee47ff0aa5555f57467ae2fa"
+  integrity sha512-erwx5r69B/WFfFuF2jcNN0817BfDBdC4765kQ6WltOMuwsimlQo3JTEq0Cle+wpHralwdeX3OfAtw/mHxPK0Wg==
 
 email-addresses@^3.0.1:
   version "3.1.0"
@@ -12496,7 +12496,7 @@ websocket-extensions@>=0.1.1:
 
 "wellping@https://github.com/wellping/wellping":
   version "1.1.2"
-  resolved "https://github.com/wellping/wellping#02560dce6378ef5328ca6f9874d0d89ab47dbaba"
+  resolved "https://github.com/wellping/wellping#1f7efa2d07f6fb3e76db5fc25ef5d6eb4cd019ab"
   dependencies:
     "@react-native-async-storage/async-storage" "~1.15.0"
     "@react-native-community/slider" "4.1.7"

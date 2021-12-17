@@ -6,6 +6,7 @@ import "./App.css";
 import { getWellPingStudyFileFromEditorObject } from "./helper";
 
 const ID_REGEX = "^\\w+$";
+const QUESTION_ID_REGEX = "^[\\w[\\]]+$"; // We allow `[\]` because `withVariable` uses "[__something__]".
 const DATETIME_REGEX =
   "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z$";
 const NON_EMPTY_REGEX = "(.|\\s)*\\S(.|\\s)*"; // https://stackoverflow.com/a/45933959/2603230
@@ -284,7 +285,7 @@ function App() {
           id: {
             type: "string",
             title: "Question ID",
-            pattern: ID_REGEX,
+            pattern: QUESTION_ID_REGEX,
           },
           question: {
             type: "string",
