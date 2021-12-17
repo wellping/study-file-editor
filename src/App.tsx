@@ -8,12 +8,26 @@ const idRegex = "^\\w+$";
 const VALIDATE_BUTTON_ID = "button-validate";
 const VALIDATE_AND_EXPORT_BUTTON_ID = "button-export";
 
+function getArrayAndEmptyStringIfEmpty(list: string[]): string[] {
+  if (list.length === 0) {
+    // The enum cannot be 0 length
+    return [""];
+  } else {
+    return list;
+  }
+}
+
 function App() {
   const [formData, setFormData] = React.useState(null);
 
   const [liveValidate, setLiveValidate] = React.useState(true);
 
-  const [questionBlockIds, setQuestionBlockIds] = React.useState([""]);
+  const [choicesListsIds, setChoicesListsIds] = React.useState(
+    getArrayAndEmptyStringIfEmpty([]),
+  );
+  const [questionBlockIds, setQuestionBlockIds] = React.useState(
+    getArrayAndEmptyStringIfEmpty([]),
+  );
 
   const schema: JSONSchema7 = {
     title: "Study File",
@@ -80,6 +94,7 @@ function App() {
           {
             title: "Reusable Choices List Name",
             type: "string",
+            enum: choicesListsIds,
           },
         ],
       },
@@ -436,13 +451,16 @@ function App() {
             schema={schema}
             formData={formData}
             onChange={(e) => {
-              let newQuestionBlockIds = Object.keys(
-                (e.formData as any).reusableQuestionBlocks,
+              setChoicesListsIds(
+                getArrayAndEmptyStringIfEmpty(
+                  Object.keys((e.formData as any).extraData.reusableChoices),
+                ),
               );
-              if (newQuestionBlockIds.length === 0) {
-                newQuestionBlockIds = [""]; // The enum cannot be 0 length
-              }
-              setQuestionBlockIds(newQuestionBlockIds);
+              setQuestionBlockIds(
+                getArrayAndEmptyStringIfEmpty(
+                  Object.keys((e.formData as any).reusableQuestionBlocks),
+                ),
+              );
 
               setFormData(e.formData);
             }}
