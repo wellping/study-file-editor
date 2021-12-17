@@ -516,7 +516,40 @@ function App() {
               </div>
               <div style={{ marginTop: 30 }}></div>
               <div className="right-button">
-                <button type="button" className="btn btn-danger">
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => {
+                    if (
+                      !window.confirm(
+                        "Loading a new file will discard the data on the current page. Are you sure to continue?",
+                      )
+                    ) {
+                      return;
+                    }
+
+                    // https://stackoverflow.com/a/40971885/2603230
+                    const input = document.createElement("input");
+                    input.type = "file";
+
+                    input.onchange = (e) => {
+                      const file = (e as any).target.files[0];
+
+                      // https://developer.mozilla.org/en-US/docs/Web/API/FileReader/result
+                      const reader = new FileReader();
+
+                      reader.onload = () => {
+                        const content = reader.result as string;
+                        //console.log(content);
+                        //console.log(JSON.parse(content));
+                        setFormData(JSON.parse(content));
+                      };
+
+                      reader.readAsText(file);
+                    };
+                    input.click();
+                  }}
+                >
                   Load File
                 </button>
               </div>
