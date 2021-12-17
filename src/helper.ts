@@ -40,6 +40,9 @@ function processMultipleTextQuestion(
   if (!("repeatedQuestions" in editorMultipleTextQuestion)) {
     return editorMultipleTextQuestion as WellPingTypes.MultipleTextQuestion;
   } else {
+    const firstSubQuestionId =
+      editorMultipleTextQuestion.repeatedQuestions[0].id;
+
     const subQuestionsList = getWellPingQuestionsListFromEditorQuestionsList(
       editorMultipleTextQuestion.repeatedQuestions,
       editorReusableQuestionBlocks,
@@ -49,7 +52,7 @@ function processMultipleTextQuestion(
     delete editorMultipleTextQuestion.repeatedQuestions;
     const multipleTextQuestion: WellPingTypes.MultipleTextQuestion =
       editorMultipleTextQuestion;
-    multipleTextQuestion.repeatedItemStartId = subQuestionsList[0].id;
+    multipleTextQuestion.repeatedItemStartId = firstSubQuestionId;
     return multipleTextQuestion;
   }
 }
