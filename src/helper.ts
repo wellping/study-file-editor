@@ -130,9 +130,15 @@ export function getWellPingStudyFileFromEditorObject(
 ): WellPingTypes.StudyFile {
   const studyInfo: WellPingTypes.StudyInfo = editorObject.studyInfo;
 
+  const reusableQuestionBlocksMap: EditorReusableQuestionBlocks = {};
+  for (const reusableQuestionBlock of editorObject.reusableQuestionBlocks) {
+    reusableQuestionBlocksMap[reusableQuestionBlock.id] =
+      reusableQuestionBlock.questions;
+  }
+
   const streams: WellPingTypes.Streams = getWellPingStreamsFromEditorStreams(
     editorObject.streams,
-    editorObject.reusableQuestionBlocks,
+    reusableQuestionBlocksMap,
   );
 
   const extraData: WellPingTypes.ExtraData = editorObject.extraData; // TODO

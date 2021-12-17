@@ -45,10 +45,12 @@ function parseLoadedEditorFileString(loadedEditorFile: string): any {
   return parsedLoadedEditorFile;
 }
 
-function getObjectKeysAsArrayAndEmptyStringIfEmpty(
-  object: object | null | undefined,
+function getIDsFieldAsArrayAndEmptyStringIfEmpty(
+  list: { id: string | null; [key: string]: any }[] = [],
 ): string[] {
-  const keys = Object.keys(object ?? {});
+  const keys = list
+    .map((item) => item.id ?? "") // All IDs
+    .filter((value) => value); // Non-null values only
   if (keys.length === 0) {
     // The enum cannot be 0 length
     return [""];
@@ -71,10 +73,10 @@ function saveJSONFile(fileName: string, object: any) {
 
 function App() {
   const [choicesListsIds, setChoicesListsIds] = React.useState<string[]>(
-    getObjectKeysAsArrayAndEmptyStringIfEmpty(undefined),
+    getIDsFieldAsArrayAndEmptyStringIfEmpty(),
   );
   const [questionBlockIds, setQuestionBlockIds] = React.useState<string[]>(
-    getObjectKeysAsArrayAndEmptyStringIfEmpty(undefined),
+    getIDsFieldAsArrayAndEmptyStringIfEmpty(),
   );
 
   // Note: this form data JSON is different from the Well Ping study file JSON (to facilicate easier user input).
@@ -86,12 +88,12 @@ function App() {
   // `setFormData`.
   function updateFormData(newFormData: any) {
     setChoicesListsIds(
-      getObjectKeysAsArrayAndEmptyStringIfEmpty(
+      getIDsFieldAsArrayAndEmptyStringIfEmpty(
         newFormData?.extraData?.reusableChoices,
       ),
     );
     setQuestionBlockIds(
-      getObjectKeysAsArrayAndEmptyStringIfEmpty(
+      getIDsFieldAsArrayAndEmptyStringIfEmpty(
         newFormData?.reusableQuestionBlocks,
       ),
     );
@@ -503,19 +505,40 @@ function App() {
         properties: {
           reusableChoices: {
             title: "Reusable Choices Lists",
-            type: "object",
-            additionalProperties: {
-              $ref: "#/definitions/choiceQuestion_choices_list",
+            type: "array",
+            items: {
+              title: "Choices List",
+              type: "object",
+              properties: {
+                id: {
+                  title: "Choices List ID",
+                  type: "string",
+                },
+                items: {
+                  $ref: "#/definitions/choiceQuestion_choices_list",
+                },
+              },
+              required: ["id", "items"],
             },
           },
         },
       },
       reusableQuestionBlocks: {
         title: "Reusable Question Blocks",
-        type: "object",
-        additionalProperties: {
-          title: "Questions",
-          $ref: "#/definitions/listOfQuestions",
+        type: "array",
+        items: {
+          title: "Question Block",
+          type: "object",
+          properties: {
+            id: {
+              title: "Question Block ID",
+              type: "string",
+            },
+            questions: {
+              $ref: "#/definitions/listOfNonEmptyQuestions",
+            },
+          },
+          required: ["id", "questions"],
         },
       },
     },
@@ -604,6 +627,7 @@ function App() {
                       saveJSONFile(fileName, wellPingStudyFile);
                     }
                   } catch (error) {
+                    console.error(error);
                     alert(error);
                   }
                   break;
