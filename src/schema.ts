@@ -270,6 +270,7 @@ export const schema: JSONSchema7 = {
 
     listOfQuestions: {
       type: "array",
+      title: "Questions",
       uniqueItems: true,
       items: {
         $ref: "#/definitions/question",
@@ -278,6 +279,7 @@ export const schema: JSONSchema7 = {
 
     listOfNonEmptyQuestions: {
       type: "array",
+      title: "Questions",
       uniqueItems: true,
       minItems: 1,
       items: {
@@ -328,6 +330,14 @@ export const schema: JSONSchema7 = {
             $ref: "#/definitions/choiceQuestion_choices_list",
           },
         },
+      },
+    },
+    reusableQuestionBlocks: {
+      title: "Reusable Question Blocks",
+      type: "object",
+      additionalProperties: {
+        title: "Questions",
+        $ref: "#/definitions/listOfQuestions",
       },
     },
   },

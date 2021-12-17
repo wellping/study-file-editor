@@ -43,7 +43,9 @@ function App() {
                 <a href="#root_extraData">→ Extra Data</a>
               </li>
               <li>
-                <a href="#">→ Questions Blocks</a>
+                <a href="#root_reusableQuestionBlocks">
+                  → Reusable Questions Blocks
+                </a>
               </li>
               <li>
                 <a href="#study-file-json">→ JSON</a>
