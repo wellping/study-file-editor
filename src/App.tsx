@@ -534,6 +534,7 @@ function App() {
                     // https://stackoverflow.com/a/40971885/2603230
                     const input = document.createElement("input");
                     input.type = "file";
+                    input.accept = "application/json";
 
                     input.onchange = (e) => {
                       const file = (e as any).target.files[0];
