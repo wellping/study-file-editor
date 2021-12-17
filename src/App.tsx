@@ -694,6 +694,7 @@ function App() {
                   Save File
                 </button>
               </div>
+              <div style={{ marginTop: 30 }}></div>
               <div className="right-button">
                 <button
                   type="submit"
@@ -710,6 +711,15 @@ function App() {
                   <br />
                   Well Ping
                 </button>
+                <p style={{ fontSize: 10 }}>
+                  (Remember to also
+                  <br />
+                  click "Save File"
+                  <br />
+                  so that you could
+                  <br />
+                  edit it later!)
+                </p>
               </div>
             </div>
           </Form>
