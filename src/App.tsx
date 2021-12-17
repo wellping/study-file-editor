@@ -7,6 +7,7 @@ import "./App.css";
 const ID_REGEX = "^\\w+$";
 const DATETIME_REGEX =
   "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z$";
+const NON_EMPTY_REGEX = "(.|\\s)*\\S(.|\\s)*"; // https://stackoverflow.com/a/45933959/2603230
 
 const VALIDATE_BUTTON_ID = "button-validate";
 const VALIDATE_AND_EXPORT_BUTTON_ID = "button-export";
@@ -19,6 +20,8 @@ function getArrayAndEmptyStringIfEmpty(list: string[]): string[] {
     return list;
   }
 }
+
+// TODO: VALIDATE TO MAKE SURE THERE'S NO DUPLICATE QUESTION ID (maybe do that in `onSubmit` as we export the new JSON for well ping because that way live validation wouldn't be slowed by this and we don't have to write a separate logic for checking ID duplication in our JSON format (which also contaisn reusable blocks to check))
 
 function App() {
   const [formData, setFormData] = React.useState(null);
@@ -83,12 +86,23 @@ function App() {
 
       choiceQuestion_choices_list: {
         title: "Choices List",
-        type: "array",
-        items: {
-          type: "string",
-        },
-        uniqueItems: true,
-        minItems: 1,
+        oneOf: [
+          {
+            title: "List",
+            type: "array",
+            items: {
+              type: "string",
+            },
+            uniqueItems: true,
+            minItems: 1,
+          },
+          {
+            title: "Line-Separated Text",
+            type: "string",
+            format: "textarea",
+            pattern: NON_EMPTY_REGEX,
+          },
+        ],
       },
       choiceQuestion_choices: {
         oneOf: [
@@ -230,7 +244,16 @@ function App() {
             type: "string",
           },
           choices: {
-            $ref: "#/definitions/choiceQuestion_choices",
+            oneOf: [
+              {
+                title: "Don't show dropdown",
+                type: "null",
+              },
+              {
+                title: "Show dropdown choice",
+                $ref: "#/definitions/choiceQuestion_choices",
+              },
+            ],
           },
           forceChoice: {
             type: "boolean",
