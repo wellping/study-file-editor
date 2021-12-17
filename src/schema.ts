@@ -161,6 +161,15 @@ export const schema: JSONSchema7 = {
       required: [],
     },
 
+    howLongAgoQuestion: {
+      properties: {
+        type: {
+          enum: ["HowLongAgo"],
+        },
+        // No other fields.
+      },
+    },
+
     multipleTextQuestion: {
       properties: {
         type: {
@@ -246,6 +255,9 @@ export const schema: JSONSchema7 = {
             {
               $ref: "#/definitions/multipleTextQuestion",
             },
+            {
+              $ref: "#/definitions/howLongAgoQuestion",
+            },
           ],
         },
       },
@@ -253,6 +265,16 @@ export const schema: JSONSchema7 = {
 
     listOfQuestions: {
       type: "array",
+      uniqueItems: true,
+      items: {
+        $ref: "#/definitions/question",
+      },
+    },
+
+    listOfNonEmptyQuestions: {
+      type: "array",
+      uniqueItems: true,
+      minItems: 1,
       items: {
         $ref: "#/definitions/question",
       },
@@ -276,7 +298,7 @@ export const schema: JSONSchema7 = {
       // https://stackoverflow.com/a/27375654/2603230
       additionalProperties: {
         title: "Stream",
-        $ref: "#/definitions/listOfQuestions",
+        $ref: "#/definitions/listOfNonEmptyQuestions",
       },
     },
     extraData: {},
