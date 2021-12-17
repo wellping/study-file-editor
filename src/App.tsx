@@ -4,7 +4,6 @@ import "./App.css";
 import { schema } from "./schema";
 
 const VALIDATE_BUTTON_ID = "button-validate";
-const VALIDATE_AND_SAVE_BUTTON_ID = "button-save";
 const VALIDATE_AND_EXPORT_BUTTON_ID = "button-export";
 
 function App() {
@@ -74,11 +73,6 @@ function App() {
                   // Do nothing. We don't need to submit.
                   break;
 
-                case VALIDATE_AND_SAVE_BUTTON_ID:
-                  // TODO: save
-                  alert("save!");
-                  break;
-
                 case VALIDATE_AND_EXPORT_BUTTON_ID:
                   // TODO: export
                   alert("export!");
@@ -121,18 +115,12 @@ function App() {
               </div>
               <div style={{ marginTop: 30 }}></div>
               <div className="right-button">
-                <button type="button" className="btn">
+                <button type="button" className="btn btn-danger">
                   Load File
                 </button>
               </div>
               <div className="right-button">
-                <button
-                  type="submit"
-                  id={VALIDATE_AND_SAVE_BUTTON_ID}
-                  className="btn btn-success"
-                >
-                  Validate and
-                  <br />
+                <button type="submit" className="btn btn-success">
                   Save File
                 </button>
               </div>
@@ -140,7 +128,7 @@ function App() {
                 <button
                   type="submit"
                   id={VALIDATE_AND_EXPORT_BUTTON_ID}
-                  className="btn btn-danger"
+                  className="btn"
                 >
                   Validate and
                   <br />
