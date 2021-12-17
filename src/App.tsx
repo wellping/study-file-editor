@@ -34,13 +34,13 @@ function App() {
           <div id="navbar" className="navbar-collapse collapse">
             <ul className="nav navbar-nav">
               <li>
-                <a href="#root_studyInfo__title">→ Study Info</a>
+                <a href="#root_studyInfo">→ Study Info</a>
               </li>
               <li>
-                <a href="#root_streams__title">→ Streams</a>
+                <a href="#root_streams">→ Streams</a>
               </li>
               <li>
-                <a href="#">→ Extra Data</a>
+                <a href="#root_extraData">→ Extra Data</a>
               </li>
               <li>
                 <a href="#">→ Questions Blocks</a>

@@ -51,17 +51,21 @@ export const schema: JSONSchema7 = {
       required: ["slider"],
     },
 
+    choiceQuestion_choices_list: {
+      title: "Choices List",
+      type: "array",
+      items: {
+        type: "string",
+      },
+      minItems: 1,
+    },
     choiceQuestion_choices: {
       oneOf: [
         {
-          title: "List",
-          type: "array",
-          items: {
-            type: "string",
-          },
+          $ref: "#/definitions/choiceQuestion_choices_list",
         },
         {
-          title: "Predefined List Name",
+          title: "Reusable Choices List Name",
           type: "string",
         },
       ],
@@ -313,7 +317,19 @@ export const schema: JSONSchema7 = {
       },
       minItems: 1,
     },
-    extraData: {},
+    extraData: {
+      title: "Extra Data",
+      type: "object",
+      properties: {
+        reusableChoices: {
+          title: "Reusable Choices Lists",
+          type: "object",
+          additionalProperties: {
+            $ref: "#/definitions/choiceQuestion_choices_list",
+          },
+        },
+      },
+    },
   },
 
   required: ["studyInfo", "streams"],
