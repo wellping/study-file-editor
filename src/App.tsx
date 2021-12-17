@@ -4,7 +4,7 @@ import { saveAs } from "file-saver";
 import { JSONSchema7 } from "json-schema";
 import "./App.css";
 
-const idRegex = "^\\w+$";
+const ID_REGEX = "^\\w+$";
 const DATETIME_REGEX =
   "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z$";
 
@@ -214,12 +214,12 @@ function App() {
           indexName: {
             type: "string",
             title: "Index's placeholder in enclosing question ID",
-            pattern: idRegex,
+            pattern: ID_REGEX,
           },
           variableName: {
             type: "string",
             title: "Answer text's placeholder in enclosing question ID",
-            pattern: idRegex,
+            pattern: ID_REGEX,
           },
           placeholder: {
             type: "string",
@@ -254,7 +254,11 @@ function App() {
         type: "object",
         required: ["id", "question", "type"],
         properties: {
-          id: { type: "string", title: "Question ID" },
+          id: {
+            type: "string",
+            title: "Question ID",
+            pattern: ID_REGEX,
+          },
           question: { type: "string", title: "Question title" },
           description: { type: "string", title: "Question description" },
           type: {
@@ -352,6 +356,7 @@ function App() {
           id: {
             type: "string",
             title: "Study ID",
+            pattern: ID_REGEX,
           },
 
           // Note that for `startDate` and `endDate`,
@@ -383,6 +388,7 @@ function App() {
             id: {
               type: "string",
               title: "Stream ID",
+              pattern: ID_REGEX,
             },
             questions: {
               title: "Stream Questions",
