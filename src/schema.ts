@@ -294,13 +294,26 @@ export const schema: JSONSchema7 = {
     },
     streams: {
       title: "Streams",
-      type: "object",
-      // https://stackoverflow.com/a/27375654/2603230
-      additionalProperties: {
+      type: "array",
+      items: {
         title: "Stream",
-        $ref: "#/definitions/listOfNonEmptyQuestions",
+        type: "object",
+        properties: {
+          id: {
+            type: "string",
+            title: "Stream ID",
+          },
+          questions: {
+            title: "Stream Questions",
+            $ref: "#/definitions/listOfNonEmptyQuestions",
+          },
+        },
+        required: ["id", "questions"],
       },
+      minItems: 1,
     },
     extraData: {},
   },
+
+  required: ["studyInfo", "streams"],
 };
