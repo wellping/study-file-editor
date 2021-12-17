@@ -451,12 +451,96 @@ function App() {
       studyInfo: {
         title: "Study Info",
         type: "object",
-        required: ["id", "startDate", "endDate"],
+        required: ["id", "studyFileURL", "startDate", "endDate"],
         properties: {
           id: {
             type: "string",
             title: "Study ID",
             pattern: ID_REGEX,
+          },
+
+          version: {
+            type: "string",
+            title: "Study File Version",
+            description: "This string will be displayed at the top of the app.",
+          },
+
+          studyFileURL: {
+            type: "string",
+            title: "Study File URL",
+            description:
+              "The URL that host this study file (which could be a JSON or a YAML file). " +
+              "The app fetches this URL in the background at every start and loads the downloaded new file at the next start.",
+          },
+
+          dashboardURL: {
+            type: "string",
+            title: "Dashboard URL",
+            description:
+              "The URL of the dashboard that will be shown to the user on the home page. Learn more about the placeholders you could use at TODO.",
+          },
+
+          server: {
+            title: "",
+            type: "object",
+            properties: {
+              firebase: {
+                title: "",
+                type: "object",
+                properties: {
+                  config: {
+                    title: "Firebase Config JSON",
+                    description:
+                      "The Firebase config JSON for the study. Leave empty if you do not intend to use Firebase.",
+                    type: "string",
+                    format: "textarea",
+                  },
+                },
+              },
+              beiwe: {
+                title: "",
+                type: "object",
+                properties: {
+                  serverUrl: {
+                    title: "Beiwe Server URL",
+                    description:
+                      "The server URL of Beiwe backend for the study. Leave empty if you do not intend to use Beiwe.",
+                    type: "string",
+                  },
+                },
+              },
+            },
+          },
+
+          consentFormUrl: {
+            type: "string",
+            title: "Consent Form URL",
+            description:
+              "The consent form will be shown to the user on their first log in.",
+          },
+
+          contactEmail: {
+            type: "string",
+            title: "Contact Email",
+            description:
+              'If provided, a button labeled "Contact Staff" will be displayed at the top of the app. Pressing the button will start an email to this address.',
+          },
+
+          weekStartsOn: {
+            type: "integer",
+            title: "Week Starts On...",
+            description:
+              'The first day of the week. Used to determine "the number of pings this week".',
+            anyOf: [
+              { type: "integer", title: "Sunday", enum: [0] },
+              { type: "integer", title: "Monday", enum: [1] },
+              { type: "integer", title: "Tuesday", enum: [2] },
+              { type: "integer", title: "Wednesday", enum: [3] },
+              { type: "integer", title: "Thursday", enum: [4] },
+              { type: "integer", title: "Friday", enum: [5] },
+              { type: "integer", title: "Saturday", enum: [6] },
+            ],
+            default: 1,
           },
 
           // Note that for `startDate` and `endDate`,
@@ -466,14 +550,14 @@ function App() {
             type: "string",
             title: "Study Start Date",
             description:
-              'The first ping will be sent after this time. Please enter the date in the format like "2020-03-10T08:00:00.000Z".',
+              'The first ping will be sent after this time (local to the user\'s phone). Please enter the date in the format like "2020-03-10T08:00:00.000Z".',
             pattern: DATETIME_REGEX,
           },
           endDate: {
             type: "string",
             title: "Study End Date",
             description:
-              'No ping will be sent after this time. Please enter the date in the format like "2020-03-10T08:00:00.000Z".',
+              'No ping will be sent after this time (local to the user\'s phone). Please enter the date in the format like "2020-03-10T08:00:00.000Z".',
             pattern: DATETIME_REGEX,
           },
         },
