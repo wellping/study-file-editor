@@ -3,7 +3,7 @@ import Form, { UiSchema } from "@rjsf/core";
 import { saveAs } from "file-saver";
 import { JSONSchema7 } from "json-schema";
 import "./App.css";
-import { getWellPingStudyFileJSONFromEditorJSON } from "./helper";
+import { getWellPingStudyFileFromEditorObject } from "./helper";
 
 const ID_REGEX = "^\\w+$";
 const DATETIME_REGEX =
@@ -540,10 +540,10 @@ function App() {
                 case VALIDATE_BUTTON_ID:
                 case VALIDATE_AND_EXPORT_BUTTON_ID:
                   const wellPingStudyFile =
-                    getWellPingStudyFileJSONFromEditorJSON(formData);
+                    getWellPingStudyFileFromEditorObject(formData);
 
                   // TODO: export
-                  alert(JSON.stringify(wellPingStudyFile));
+                  alert(JSON.stringify(wellPingStudyFile, null, 2));
                   break;
 
                 default:
@@ -647,6 +647,10 @@ function App() {
                   type="submit"
                   id={VALIDATE_AND_EXPORT_BUTTON_ID}
                   className="btn btn-default"
+                  onClick={() => {
+                    // Jump to the top to see potential errors.
+                    window.scroll(0, 0);
+                  }}
                 >
                   Validate and
                   <br />
