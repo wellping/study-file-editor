@@ -6,6 +6,8 @@ import { schema } from "./schema";
 function App() {
   const [formData, setFormData] = React.useState(null);
 
+  const [liveValidate, setLiveValidate] = React.useState(true);
+
   return (
     <>
       <nav className="navbar navbar-default navbar-fixed-top">
@@ -64,8 +66,43 @@ function App() {
             formData={formData}
             onChange={(e) => setFormData(e.formData)}
             noHtml5Validate
-            liveValidate
-          />
+            liveValidate={liveValidate}
+          >
+            <div
+              style={{
+                position: "fixed",
+                right: 20,
+                top: 80,
+                textAlign: "right",
+              }}
+            >
+              <div>
+                <button type="submit" className="btn btn-primary">
+                  Validate
+                </button>
+              </div>
+              <div
+                style={{
+                  marginTop: 10,
+                }}
+              >
+                <button
+                  type="button"
+                  className="btn btn-warning"
+                  onClick={() => {
+                    setLiveValidate(!liveValidate);
+                  }}
+                >
+                  Live Validate {liveValidate ? "✅" : "❌"}
+                </button>
+                <p style={{ fontSize: 10 }}>
+                  (Turn off Live Validate
+                  <br />
+                  if the page is slow)
+                </p>
+              </div>
+            </div>
+          </Form>
 
           <pre>{JSON.stringify(formData, null, 2)}</pre>
         </div>
