@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/study-file-editor/static/css/main.b2b0d671.css",
-    "main.js": "/study-file-editor/static/js/main.0008700e.js",
+    "main.js": "/study-file-editor/static/js/main.e3bf3fb2.js",
     "static/js/787.f022b6df.chunk.js": "/study-file-editor/static/js/787.f022b6df.chunk.js",
     "static/media/glyphicons-halflings-regular.svg": "/study-file-editor/static/media/glyphicons-halflings-regular.060b2710bdbbe3dfe48b.svg",
     "static/media/glyphicons-halflings-regular.ttf": "/study-file-editor/static/media/glyphicons-halflings-regular.4692b9ec53fd5972caa2.ttf",
@@ -10,11 +10,11 @@
     "static/media/glyphicons-halflings-regular.woff2": "/study-file-editor/static/media/glyphicons-halflings-regular.be810be3a3e14c682a25.woff2",
     "index.html": "/study-file-editor/index.html",
     "main.b2b0d671.css.map": "/study-file-editor/static/css/main.b2b0d671.css.map",
-    "main.0008700e.js.map": "/study-file-editor/static/js/main.0008700e.js.map",
+    "main.e3bf3fb2.js.map": "/study-file-editor/static/js/main.e3bf3fb2.js.map",
     "787.f022b6df.chunk.js.map": "/study-file-editor/static/js/787.f022b6df.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.b2b0d671.css",
-    "static/js/main.0008700e.js"
+    "static/js/main.e3bf3fb2.js"
   ]
 }
