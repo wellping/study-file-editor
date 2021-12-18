@@ -96,11 +96,28 @@ function processYesNoQuestion(
   return yesNoQuestion;
 }
 
+function processChoicesList(
+  input: string[] | string | { lineSeparatedString: string },
+): string[] | string {
+  if (Array.isArray(input)) {
+    return input; // Directly return the array.
+  } else if (typeof input === "object") {
+    return input.lineSeparatedString.trim().split("\n");
+  } else {
+    return input; // Directly return the name of the reusable list.
+  }
+}
+
 function processChoiceQuestion(
   editorChoiceQuestion: EditorQuestion,
   questionsList: WellPingTypes.QuestionsList,
   editorReusableQuestionBlocks: EditorReusableQuestionBlocks,
 ): WellPingTypes.ChoicesQuestion {
+  const choiceValues: string[] | string = processChoicesList(
+    editorChoiceQuestion.choices,
+  );
+  editorChoiceQuestion.choices = choiceValues;
+
   if (!("specialCasesBranches" in editorChoiceQuestion)) {
     return editorChoiceQuestion;
   }
@@ -109,6 +126,14 @@ function processChoiceQuestion(
 
   for (const specialCasesBranch of editorChoiceQuestion.specialCasesBranches) {
     const choiceValue = specialCasesBranch.choice;
+    if (Array.isArray(choiceValues)) {
+      if (!choiceValues.includes(choiceValue)) {
+        throw new Error(
+          `The question "${editorChoiceQuestion.id}"'s "specialCasesBranch" contains a choice value "${choiceValue}" which is not in its choice list.`,
+        );
+      }
+    }
+
     const subquestions = specialCasesBranch.questions;
 
     const firstSubQuestionId = flattenSubquestionsAndReturnQuestionFirstID(

@@ -152,30 +152,47 @@ function App() {
         required: ["slider"],
       },
 
-      choiceQuestion_choices_list: {
-        title: "Choices List",
-        oneOf: [
-          {
-            title: "List",
-            type: "array",
-            items: {
-              type: "string",
-            },
-            uniqueItems: true,
-            minItems: 1,
-          },
-          {
+      choiceQuestion_choices_list_array: {
+        title: "List",
+        type: "array",
+        items: {
+          type: "string",
+        },
+        uniqueItems: true,
+        minItems: 1,
+      },
+      choiceQuestion_choices_list_lineSeparatedString: {
+        // We set this as an object to distinguish it with "Reusable Choices List Name" below which is also a string.
+        title: "Line-Separated Text",
+        type: "object",
+        properties: {
+          lineSeparatedString: {
             title: "Line-Separated Text",
             type: "string",
             format: "textarea",
             pattern: NON_EMPTY_REGEX,
+          },
+        },
+        required: ["lineSeparatedString"],
+      },
+      choiceQuestion_choices_list: {
+        title: "Choices List",
+        oneOf: [
+          {
+            $ref: "#/definitions/choiceQuestion_choices_list_array",
+          },
+          {
+            $ref: "#/definitions/choiceQuestion_choices_list_lineSeparatedString",
           },
         ],
       },
       choiceQuestion_choices: {
         oneOf: [
           {
-            $ref: "#/definitions/choiceQuestion_choices_list",
+            $ref: "#/definitions/choiceQuestion_choices_list_array",
+          },
+          {
+            $ref: "#/definitions/choiceQuestion_choices_list_lineSeparatedString",
           },
           {
             title: "Reusable Choices List Name",
