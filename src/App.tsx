@@ -190,6 +190,7 @@ function App() {
           type: "object",
           properties: {
             choice: {
+              title: "Choice value",
               type: "string",
             },
             questions: {
@@ -254,13 +255,19 @@ function App() {
           type: {
             enum: ["YesNo"],
           },
-          branches_yes: {
-            title: 'Questions to show if the user answered "Yes"',
-            $ref: "#/definitions/listOfQuestions",
-          },
-          branches_no: {
-            title: 'Questions to show if the user answered "No"',
-            $ref: "#/definitions/listOfQuestions",
+          branches: {
+            type: "object",
+            title: "Branches",
+            properties: {
+              yes: {
+                title: 'Questions to show if the user answered "Yes"',
+                $ref: "#/definitions/listOfQuestions",
+              },
+              no: {
+                title: 'Questions to show if the user answered "No"',
+                $ref: "#/definitions/listOfQuestions",
+              },
+            },
           },
           addFollowupStream: {
             type: "object",

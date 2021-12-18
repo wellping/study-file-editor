@@ -32,29 +32,27 @@ function mergeQuestionsList(
   Object.assign(questionsList, subQuestionsList);
 }
 
-// Also deletes the `subquestionsKey` key.
 function flattenSubquestionsAndReturnQuestionFirstID(
   editorQuestion: EditorQuestion,
-  subquestionsKey: string,
+  subquestionsKeypath: string,
   questionsList: WellPingTypes.QuestionsList,
   editorReusableQuestionBlocks: EditorReusableQuestionBlocks,
 ): string | undefined {
-  if (
-    !(subquestionsKey in editorQuestion) ||
-    editorQuestion[subquestionsKey].length === 0
-  ) {
-    delete editorQuestion[subquestionsKey];
+  // https://stackoverflow.com/a/44627252/2603230
+  const subquestions: EditorQuestion[] = subquestionsKeypath
+    .split(".")
+    .reduce((previous, current) => previous[current] ?? [], editorQuestion);
+
+  if (subquestions.length === 0) {
     return undefined;
   } else {
-    const firstSubQuestionId = editorQuestion[subquestionsKey][0].id;
+    const firstSubQuestionId = subquestions[0].id;
 
     const subQuestionsList = getWellPingQuestionsListFromEditorQuestionsList(
-      editorQuestion[subquestionsKey],
+      subquestions,
       editorReusableQuestionBlocks,
     );
     mergeQuestionsList(questionsList, subQuestionsList);
-
-    delete editorQuestion[subquestionsKey];
 
     return firstSubQuestionId;
   }
@@ -72,6 +70,8 @@ function processMultipleTextQuestion(
     editorReusableQuestionBlocks,
   );
 
+  delete editorMultipleTextQuestion.repeatedQuestions;
+
   const multipleTextQuestion: WellPingTypes.MultipleTextQuestion =
     editorMultipleTextQuestion;
   multipleTextQuestion.repeatedItemStartId = firstSubQuestionId;
@@ -85,16 +85,18 @@ function processYesNoQuestion(
 ): WellPingTypes.YesNoQuestion {
   const firstSubQuestionId_yes = flattenSubquestionsAndReturnQuestionFirstID(
     editorYesNoQuestion,
-    "branches_yes",
+    "branches.yes",
     questionsList,
     editorReusableQuestionBlocks,
   );
   const firstSubQuestionId_no = flattenSubquestionsAndReturnQuestionFirstID(
     editorYesNoQuestion,
-    "branches_no",
+    "branches.no",
     questionsList,
     editorReusableQuestionBlocks,
   );
+
+  delete editorYesNoQuestion.branches;
 
   const yesNoQuestion: WellPingTypes.YesNoQuestion = editorYesNoQuestion;
   yesNoQuestion.branchStartId = {};
