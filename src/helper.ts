@@ -102,7 +102,9 @@ function processChoicesList(
   if (Array.isArray(input)) {
     return input; // Directly return the array.
   } else if (typeof input === "object") {
-    return input.lineSeparatedString.trim().split("\n");
+    return input.lineSeparatedString
+      .split("\n")
+      .filter((value) => value.length > 0);
   } else {
     return input; // Directly return the name of the reusable list.
   }
