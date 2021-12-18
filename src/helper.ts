@@ -259,7 +259,13 @@ export function getWellPingStudyFileFromEditorObject(
     reusableQuestionBlocksMap,
   );
 
-  const extraData: WellPingTypes.ExtraData = editorObject.extraData; // TODO
+  const reusableChoices: { [key: string]: string[] } = {};
+  for (const reusableChoice of editorObject.extraData?.reusableChoices ?? []) {
+    const choices = processChoicesList(reusableChoice.items) as string[];
+    reusableChoices[reusableChoice.id] = choices;
+  }
+  editorObject.extraData.reusableChoices = reusableChoices;
+  const extraData: WellPingTypes.ExtraData = editorObject.extraData;
 
   const studyFile: WellPingTypes.StudyFile = {
     studyInfo,
