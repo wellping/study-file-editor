@@ -159,10 +159,22 @@ function getWellPingQuestionsListFromEditorQuestionsList(
   const questionsList: WellPingTypes.QuestionsList = {};
 
   // Flatten editorReusableQuestionBlocks
+  const previousQuestionBlocksIDs: string[] = [];
   for (let i = 0; i < editorQuestionsList.length; i++) {
     const editorQuestion = editorQuestionsList[i];
     if ("questionBlockId" in editorQuestion) {
       const questionBlockId = editorQuestion.questionBlockId;
+
+      if (previousQuestionBlocksIDs.includes(questionBlockId)) {
+        throw new Error(
+          `Loop detected in question blocks: ` +
+            `"${previousQuestionBlocksIDs.join(
+              `" → "`,
+            )}" → "${questionBlockId}"`,
+        );
+      }
+      previousQuestionBlocksIDs.push(questionBlockId);
+
       // Replace this `questionBlockId` object with the actual questions.
       editorQuestionsList.splice(
         i,
