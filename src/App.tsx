@@ -254,19 +254,13 @@ function App() {
           type: {
             enum: ["YesNo"],
           },
-          branchStartId: {
-            type: "object",
-            title: "Branches",
-            properties: {
-              yes: {
-                title: 'If the user answered "Yes"',
-                $ref: "#/definitions/listOfQuestions",
-              },
-              no: {
-                title: 'If the user answered "No"',
-                $ref: "#/definitions/listOfQuestions",
-              },
-            },
+          branches_yes: {
+            title: 'Questions to show if the user answered "Yes"',
+            $ref: "#/definitions/listOfQuestions",
+          },
+          branches_no: {
+            title: 'Questions to show if the user answered "No"',
+            $ref: "#/definitions/listOfQuestions",
           },
           addFollowupStream: {
             type: "object",

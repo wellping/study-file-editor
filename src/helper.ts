@@ -32,19 +32,19 @@ function mergeQuestionsList(
   Object.assign(questionsList, subQuestionsList);
 }
 
-function flattenSubquestions(
+// Also deletes the `subquestionsKey` key.
+function flattenSubquestionsAndReturnQuestionFirstID(
   editorQuestion: EditorQuestion,
   subquestionsKey: string,
-  firstSubquestionsIDKey: string,
   questionsList: WellPingTypes.QuestionsList,
   editorReusableQuestionBlocks: EditorReusableQuestionBlocks,
-): any {
+): string | undefined {
   if (
     !(subquestionsKey in editorQuestion) ||
     editorQuestion[subquestionsKey].length === 0
   ) {
     delete editorQuestion[subquestionsKey];
-    return editorQuestion;
+    return undefined;
   } else {
     const firstSubQuestionId = editorQuestion[subquestionsKey][0].id;
 
@@ -55,9 +55,8 @@ function flattenSubquestions(
     mergeQuestionsList(questionsList, subQuestionsList);
 
     delete editorQuestion[subquestionsKey];
-    const question = editorQuestion;
-    question[firstSubquestionsIDKey] = firstSubQuestionId;
-    return question;
+
+    return firstSubQuestionId;
   }
 }
 
@@ -66,13 +65,42 @@ function processMultipleTextQuestion(
   questionsList: WellPingTypes.QuestionsList,
   editorReusableQuestionBlocks: EditorReusableQuestionBlocks,
 ): WellPingTypes.MultipleTextQuestion {
-  return flattenSubquestions(
+  const firstSubQuestionId = flattenSubquestionsAndReturnQuestionFirstID(
     editorMultipleTextQuestion,
     "repeatedQuestions",
-    "repeatedItemStartId",
     questionsList,
     editorReusableQuestionBlocks,
   );
+
+  const multipleTextQuestion: WellPingTypes.MultipleTextQuestion =
+    editorMultipleTextQuestion;
+  multipleTextQuestion.repeatedItemStartId = firstSubQuestionId;
+  return multipleTextQuestion;
+}
+
+function processYesNoQuestion(
+  editorYesNoQuestion: EditorQuestion,
+  questionsList: WellPingTypes.QuestionsList,
+  editorReusableQuestionBlocks: EditorReusableQuestionBlocks,
+): WellPingTypes.YesNoQuestion {
+  const firstSubQuestionId_yes = flattenSubquestionsAndReturnQuestionFirstID(
+    editorYesNoQuestion,
+    "branches_yes",
+    questionsList,
+    editorReusableQuestionBlocks,
+  );
+  const firstSubQuestionId_no = flattenSubquestionsAndReturnQuestionFirstID(
+    editorYesNoQuestion,
+    "branches_no",
+    questionsList,
+    editorReusableQuestionBlocks,
+  );
+
+  const yesNoQuestion: WellPingTypes.YesNoQuestion = editorYesNoQuestion;
+  yesNoQuestion.branchStartId = {};
+  yesNoQuestion.branchStartId.yes = firstSubQuestionId_yes;
+  yesNoQuestion.branchStartId.no = firstSubQuestionId_no;
+  return yesNoQuestion;
 }
 
 function getWellPingQuestionsListFromEditorQuestionsList(
@@ -119,6 +147,14 @@ function getWellPingQuestionsListFromEditorQuestionsList(
         );
         break;
 
+      case "YesNo":
+        question = processYesNoQuestion(
+          editorQuestion,
+          questionsList,
+          editorReusableQuestionBlocks,
+        );
+        break;
+
       default:
         question = editorQuestion;
         break;
@@ -147,8 +183,11 @@ function getWellPingStreamsFromEditorStreams(
 }
 
 export function getWellPingStudyFileFromEditorObject(
-  editorObject: any,
+  editorObject_ori: any,
 ): WellPingTypes.StudyFile {
+  // Make a copy of the input so that we will not change `formData`.
+  const editorObject = JSON.parse(JSON.stringify(editorObject_ori));
+
   const studyInfo: WellPingTypes.StudyInfo = editorObject.studyInfo;
 
   const reusableQuestionBlocksMap: EditorReusableQuestionBlocks = {};
