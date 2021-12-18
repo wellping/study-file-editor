@@ -16,3 +16,20 @@
 #right-toolbar .right-button {
   margin-bottom: 10px;
 }
+
+/*
+ Sad hack to make the array toolbar width smaller :(
+ https://github.com/rjsf-team/react-jsonschema-form/blob/76ab08c5b06b1cbecd03fab0bdbca64b69b5c038/packages/core/src/components/fields/ArrayField.js#L48-L53
+*/
+.App .col-xs-9 {
+  /* As if .col-xs-11 */
+  width: 91.66666667% !important;
+}
+.App .col-xs-offset-9 {
+  /* As if .col-xs-offset-11 */
+  margin-left: 91.66666667% !important;
+}
+.App .col-xs-3 {
+  /* As if .col-xs-1 */
+  width: 8.33333333% !important;
+}
