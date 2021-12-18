@@ -33,16 +33,10 @@ function mergeQuestionsList(
 }
 
 function flattenSubquestionsAndReturnQuestionFirstID(
-  editorQuestion: EditorQuestion,
-  subquestionsKeypath: string,
+  subquestions: EditorQuestion[] = [],
   questionsList: WellPingTypes.QuestionsList,
   editorReusableQuestionBlocks: EditorReusableQuestionBlocks,
 ): string | undefined {
-  // https://stackoverflow.com/a/44627252/2603230
-  const subquestions: EditorQuestion[] = subquestionsKeypath
-    .split(".")
-    .reduce((previous, current) => previous[current] ?? [], editorQuestion);
-
   if (subquestions.length === 0) {
     return undefined;
   } else {
@@ -64,8 +58,7 @@ function processMultipleTextQuestion(
   editorReusableQuestionBlocks: EditorReusableQuestionBlocks,
 ): WellPingTypes.MultipleTextQuestion {
   const firstSubQuestionId = flattenSubquestionsAndReturnQuestionFirstID(
-    editorMultipleTextQuestion,
-    "repeatedQuestions",
+    editorMultipleTextQuestion.repeatedQuestions,
     questionsList,
     editorReusableQuestionBlocks,
   );
@@ -84,14 +77,12 @@ function processYesNoQuestion(
   editorReusableQuestionBlocks: EditorReusableQuestionBlocks,
 ): WellPingTypes.YesNoQuestion {
   const firstSubQuestionId_yes = flattenSubquestionsAndReturnQuestionFirstID(
-    editorYesNoQuestion,
-    "branches.yes",
+    editorYesNoQuestion.branches?.yes,
     questionsList,
     editorReusableQuestionBlocks,
   );
   const firstSubQuestionId_no = flattenSubquestionsAndReturnQuestionFirstID(
-    editorYesNoQuestion,
-    "branches.no",
+    editorYesNoQuestion.branches?.no,
     questionsList,
     editorReusableQuestionBlocks,
   );
@@ -103,6 +94,37 @@ function processYesNoQuestion(
   yesNoQuestion.branchStartId.yes = firstSubQuestionId_yes;
   yesNoQuestion.branchStartId.no = firstSubQuestionId_no;
   return yesNoQuestion;
+}
+
+function processChoiceQuestion(
+  editorChoiceQuestion: EditorQuestion,
+  questionsList: WellPingTypes.QuestionsList,
+  editorReusableQuestionBlocks: EditorReusableQuestionBlocks,
+): WellPingTypes.ChoicesQuestion {
+  if (!("specialCasesBranches" in editorChoiceQuestion)) {
+    return editorChoiceQuestion;
+  }
+
+  editorChoiceQuestion.specialCasesStartId = [];
+
+  for (const specialCasesBranch of editorChoiceQuestion.specialCasesBranches) {
+    const choiceValue = specialCasesBranch.choice;
+    const subquestions = specialCasesBranch.questions;
+
+    const firstSubQuestionId = flattenSubquestionsAndReturnQuestionFirstID(
+      subquestions,
+      questionsList,
+      editorReusableQuestionBlocks,
+    );
+    editorChoiceQuestion.specialCasesStartId.push([
+      choiceValue,
+      firstSubQuestionId,
+    ]);
+  }
+
+  delete editorChoiceQuestion.specialCasesBranches;
+
+  return editorChoiceQuestion as WellPingTypes.ChoicesQuestion;
 }
 
 function getWellPingQuestionsListFromEditorQuestionsList(
@@ -140,7 +162,7 @@ function getWellPingQuestionsListFromEditorQuestionsList(
 
     let question: WellPingTypes.Question;
 
-    switch (editorQuestion.type) {
+    switch (editorQuestion.type as WellPingTypes.QuestionTypeType) {
       case "MultipleText":
         question = processMultipleTextQuestion(
           editorQuestion,
@@ -151,6 +173,15 @@ function getWellPingQuestionsListFromEditorQuestionsList(
 
       case "YesNo":
         question = processYesNoQuestion(
+          editorQuestion,
+          questionsList,
+          editorReusableQuestionBlocks,
+        );
+        break;
+
+      case "ChoicesWithSingleAnswer":
+      case "ChoicesWithMultipleAnswers":
+        question = processChoiceQuestion(
           editorQuestion,
           questionsList,
           editorReusableQuestionBlocks,

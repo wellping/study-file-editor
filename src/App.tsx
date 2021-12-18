@@ -184,7 +184,7 @@ function App() {
           },
         ],
       },
-      choiceQuestion_specialCasesStartId: {
+      choiceQuestion_specialCasesBranches: {
         type: "array",
         items: {
           type: "object",
@@ -217,8 +217,8 @@ function App() {
           choices: {
             $ref: "#/definitions/choiceQuestion_choices",
           },
-          specialCasesStartId: {
-            $ref: "#/definitions/choiceQuestion_specialCasesStartId",
+          specialCasesBranches: {
+            $ref: "#/definitions/choiceQuestion_specialCasesBranches",
           },
           randomizeChoicesOrder: {
             $ref: "#/definitions/choiceQuestion_randomizeChoicesOrder",
@@ -237,8 +237,8 @@ function App() {
           choices: {
             $ref: "#/definitions/choiceQuestion_choices",
           },
-          specialCasesStartId: {
-            $ref: "#/definitions/choiceQuestion_specialCasesStartId",
+          specialCasesBranches: {
+            $ref: "#/definitions/choiceQuestion_specialCasesBranches",
           },
           randomizeChoicesOrder: {
             $ref: "#/definitions/choiceQuestion_randomizeChoicesOrder",
