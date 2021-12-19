@@ -494,8 +494,6 @@ function App() {
           dashboardURL: {
             type: "string",
             title: "Dashboard URL",
-            description:
-              "The URL of the dashboard that will be shown to the user on the home page. Learn more about the placeholders you could use at TODO.",
           },
 
           server: {
@@ -648,7 +646,26 @@ function App() {
     required: ["studyInfo", "streams"],
   };
 
-  const uiSchema: UiSchema = {};
+  const uiSchema: UiSchema = {
+    studyInfo: {
+      dashboardURL: {
+        "ui:description": (
+          <>
+            <p>
+              The URL of the dashboard that will be shown to the user on the
+              home page.
+            </p>
+            <p>Placeholders you could use in this URL:</p>
+            <ul>
+              <li>
+                <code>__USERNAME__</code>: TODO
+              </li>
+            </ul>
+          </>
+        ),
+      },
+    },
+  };
 
   return (
     <>
