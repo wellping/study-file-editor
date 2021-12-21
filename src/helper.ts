@@ -69,8 +69,11 @@ function processMultipleTextQuestion(
     questionsList,
     editorReusableQuestionBlocks,
   );
-
   delete editorMultipleTextQuestion.repeatedQuestions;
+
+  editorMultipleTextQuestion.choices = processOptionalChoicesList(
+    editorMultipleTextQuestion.choices,
+  );
 
   const multipleTextQuestion: WellPingTypes.MultipleTextQuestion =
     editorMultipleTextQuestion;
@@ -114,6 +117,16 @@ function processChoicesList(
       .filter((value) => value.length > 0);
   } else {
     return input; // Directly return the name of the reusable list.
+  }
+}
+function processOptionalChoicesList(
+  input: null | string[] | string | { lineSeparatedString: string },
+): string[] | string | undefined {
+  if (input === null) {
+    // Schema requires it to be `undefined` instead of `null`.
+    return undefined;
+  } else {
+    return processChoicesList(input);
   }
 }
 
