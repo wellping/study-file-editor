@@ -9,6 +9,7 @@ const ID_REGEX = "^\\w+$";
 const QUESTION_ID_REGEX = "^[\\w[\\]]+$"; // We allow `[\]` because `withVariable` uses "[__something__]".
 const DATETIME_REGEX =
   "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z$";
+const HOURMINUTESECOND_REGEX = "^[0-9]{2}:[0-9]{2}:[0-9]{2}$";
 const NON_EMPTY_REGEX = "(.|\\s)*\\S(.|\\s)*"; // https://stackoverflow.com/a/45933959/2603230
 
 const VALIDATE_BUTTON_ID = "button-validate";
@@ -475,6 +476,7 @@ function App() {
           "consentFormUrl",
           "startDate",
           "endDate",
+          "pingsFrequency",
         ],
         properties: {
           id: {
@@ -585,6 +587,36 @@ function App() {
             description:
               'No ping will be sent after this time (local to the user\'s phone). Please enter the date in the format like "2020-03-10T08:00:00.000Z".',
             pattern: DATETIME_REGEX,
+          },
+
+          pingsFrequency: {
+            type: "array",
+            title: "Pings Frequency",
+            items: {
+              type: "object",
+              title: "Ping",
+              properties: {
+                earliestPingNotificationTime: {
+                  type: "string",
+                  title:
+                    "The earliest time that the ping will be sent (inclusive).",
+                  pattern: HOURMINUTESECOND_REGEX,
+                },
+                latestPingNotificationTime: {
+                  type: "string",
+                  title:
+                    "The latest time that the ping will be sent (inclusive).",
+                  pattern: HOURMINUTESECOND_REGEX,
+                },
+                expireAfterTime: {
+                  type: "string",
+                  title: "Expire After...",
+                  pattern: HOURMINUTESECOND_REGEX,
+                },
+              },
+              required: ["earliestPingNotificationTime", "expireAfterTime"],
+            },
+            minItems: 1,
           },
         },
       },
