@@ -485,6 +485,7 @@ function App() {
 
           studyFileURL: {
             type: "string",
+            format: "uri",
             title: "Study File URL",
             description:
               "The URL that host this study file (which could be a JSON or a YAML file). " +
@@ -493,6 +494,7 @@ function App() {
 
           dashboardURL: {
             type: "string",
+            format: "uri",
             title: "Dashboard URL",
           },
 
@@ -519,6 +521,7 @@ function App() {
                 properties: {
                   serverUrl: {
                     title: "Beiwe Server URL",
+                    format: "uri",
                     description:
                       "The server URL of Beiwe backend for the study. Leave empty if you do not intend to use Beiwe.",
                     type: "string",
@@ -530,6 +533,7 @@ function App() {
 
           consentFormUrl: {
             type: "string",
+            format: "uri",
             title: "Consent Form URL",
             description:
               "The consent form will be shown to the user on their first log in.",
