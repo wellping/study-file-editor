@@ -47,12 +47,11 @@ function flattenSubquestionsAndReturnQuestionFirstID(
   if (subquestions.length === 0) {
     return undefined;
   } else {
-    const firstSubQuestionId = subquestions[0].id;
-
-    const subQuestionsList = getWellPingQuestionsListFromEditorQuestionsList(
-      subquestions,
-      editorReusableQuestionBlocks,
-    );
+    const [subQuestionsList, firstSubQuestionId] =
+      getWellPingQuestionsListFromEditorQuestionsList(
+        subquestions,
+        editorReusableQuestionBlocks,
+      );
     mergeQuestionsList(questionsList, subQuestionsList);
 
     return firstSubQuestionId;
@@ -174,10 +173,13 @@ function processChoiceQuestion(
   return editorChoiceQuestion as WellPingTypes.ChoicesQuestion;
 }
 
+/**
+ * Returns a question list as well as the ID of the first question.
+ */
 function getWellPingQuestionsListFromEditorQuestionsList(
   editorQuestionsList: EditorQuestionsList,
   editorReusableQuestionBlocks: EditorReusableQuestionBlocks,
-): WellPingTypes.QuestionsList {
+): [WellPingTypes.QuestionsList, WellPingTypes.QuestionId] {
   const questionsList: WellPingTypes.QuestionsList = {};
 
   // Flatten editorReusableQuestionBlocks
@@ -207,6 +209,8 @@ function getWellPingQuestionsListFromEditorQuestionsList(
       continue;
     }
   }
+
+  const firstQuestionId = editorQuestionsList[0].id;
 
   for (let i = 0; i < editorQuestionsList.length; i++) {
     const editorQuestion = editorQuestionsList[i];
@@ -257,21 +261,27 @@ function getWellPingQuestionsListFromEditorQuestionsList(
     questionsList[questionId] = question;
   }
 
-  return questionsList;
+  return [questionsList, firstQuestionId];
 }
 
 function getWellPingStreamsFromEditorStreams(
   editorStreams: EditorStreams,
   editorReusableQuestionBlocks: EditorReusableQuestionBlocks,
-): WellPingTypes.Streams {
+): [WellPingTypes.Streams, WellPingTypes.StreamsStartingQuestionIds] {
   const streams: WellPingTypes.Streams = {};
+  const streamsStartingQuestionIds: WellPingTypes.StreamsStartingQuestionIds =
+    {};
   for (const editorStream of editorStreams) {
-    streams[editorStream.id] = getWellPingQuestionsListFromEditorQuestionsList(
-      editorStream.questions,
-      editorReusableQuestionBlocks,
-    );
+    const [questionsList, firstQuestionId] =
+      getWellPingQuestionsListFromEditorQuestionsList(
+        editorStream.questions,
+        editorReusableQuestionBlocks,
+      );
+
+    streams[editorStream.id] = questionsList;
+    streamsStartingQuestionIds[editorStream.id] = firstQuestionId;
   }
-  return streams;
+  return [streams, streamsStartingQuestionIds];
 }
 
 export function getWellPingStudyFileFromEditorObject(
@@ -291,10 +301,12 @@ export function getWellPingStudyFileFromEditorObject(
       reusableQuestionBlock.questions;
   }
 
-  const streams: WellPingTypes.Streams = getWellPingStreamsFromEditorStreams(
-    editorObject.streams,
-    reusableQuestionBlocksMap,
-  );
+  const [streams, streamsStartingQuestionIds] =
+    getWellPingStreamsFromEditorStreams(
+      editorObject.streams,
+      reusableQuestionBlocksMap,
+    );
+  studyInfo.streamsStartingQuestionIds = streamsStartingQuestionIds;
 
   const reusableChoices: { [key: string]: string[] } = {};
   for (const reusableChoice of editorObject.extraData?.reusableChoices ?? []) {
