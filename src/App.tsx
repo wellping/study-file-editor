@@ -4,13 +4,13 @@ import { saveAs } from "file-saver";
 import { JSONSchema7 } from "json-schema";
 import "./App.css";
 import { getWellPingStudyFileFromEditorObject } from "./helper";
-
-const ID_REGEX = "^\\w+$";
-const QUESTION_ID_REGEX = "^[\\w[\\]]+$"; // We allow `[\]` because `withVariable` uses "[__something__]".
-const DATETIME_REGEX =
-  "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{3}Z$";
-const HOURMINUTESECOND_REGEX = "^[0-9]{2}:[0-9]{2}:[0-9]{2}$";
-const NON_EMPTY_REGEX = "(.|\\s)*\\S(.|\\s)*"; // https://stackoverflow.com/a/45933959/2603230
+import {
+  ID_REGEX,
+  QUESTION_ID_REGEX,
+  DATETIME_REGEX,
+  HOURMINUTESECOND_REGEX,
+  NON_EMPTY_REGEX,
+} from "./regexes";
 
 const VALIDATE_BUTTON_ID = "button-validate";
 const VALIDATE_AND_EXPORT_BUTTON_ID = "button-export";
