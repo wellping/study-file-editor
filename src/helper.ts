@@ -1,4 +1,4 @@
-import * as WellPingTypes from "wellping/src/helpers/types";
+import * as WellPingTypes from "@wellping/study-schemas/lib/types";
 
 type EditorStream = any;
 type EditorStreams = EditorStream[];
