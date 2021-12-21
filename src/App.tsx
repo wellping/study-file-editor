@@ -469,7 +469,13 @@ function App() {
       studyInfo: {
         title: "Study Info",
         type: "object",
-        required: ["id", "studyFileURL", "startDate", "endDate"],
+        required: [
+          "id",
+          "studyFileURL",
+          "consentFormUrl",
+          "startDate",
+          "endDate",
+        ],
         properties: {
           id: {
             type: "string",
