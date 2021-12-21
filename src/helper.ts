@@ -10,6 +10,12 @@ type EditorReusableQuestionBlocks = {
   [questionBlockKey: string]: EditorQuestionsList;
 };
 
+function deleteEmptyObject(object: { [key: string]: any }, key: string): void {
+  if (Object.keys(object[key]).length === 0) {
+    delete object[key];
+  }
+}
+
 function getDuplicatedQuestionIDsError(duplicatedQuestionIDs: string[]) {
   return new Error(
     `Duplicated question IDs: "${duplicatedQuestionIDs.join('", "')}"!`,
@@ -261,6 +267,9 @@ export function getWellPingStudyFileFromEditorObject(
   // Make a copy of the input so that we will not change `formData`.
   const editorObject = JSON.parse(JSON.stringify(editorObject_ori));
 
+  // Delete empty objects.
+  deleteEmptyObject(editorObject.studyInfo.server, "beiwe");
+  deleteEmptyObject(editorObject.studyInfo.server, "firebase");
   const studyInfo: WellPingTypes.StudyInfo = editorObject.studyInfo;
 
   const reusableQuestionBlocksMap: EditorReusableQuestionBlocks = {};
@@ -288,6 +297,7 @@ export function getWellPingStudyFileFromEditorObject(
     extraData,
   };
 
+  console.log(studyFile);
   // An error will be thrown if parsing fails.
   WellPingStudyFileSchema.parse(studyFile);
 
