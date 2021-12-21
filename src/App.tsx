@@ -73,6 +73,11 @@ function saveJSONFile(fileName: string, object: any) {
 }
 
 function App() {
+  const [pingsFrequencyCount, setPingsFrequencyCount] =
+    React.useState<number>(0);
+  const [streamIds, setStreamIds] = React.useState<string[]>(
+    getIDsFieldAsArrayAndEmptyStringIfEmpty(),
+  );
   const [choicesListsIds, setChoicesListsIds] = React.useState<string[]>(
     getIDsFieldAsArrayAndEmptyStringIfEmpty(),
   );
@@ -88,6 +93,8 @@ function App() {
   // `setChoicesListsIds` and `setQuestionBlockIds` to be done before
   // `setFormData`.
   function updateFormData(newFormData: any) {
+    setPingsFrequencyCount(newFormData?.studyInfo?.pingsFrequency?.length ?? 0);
+    setStreamIds(getIDsFieldAsArrayAndEmptyStringIfEmpty(newFormData?.streams));
     setChoicesListsIds(
       getIDsFieldAsArrayAndEmptyStringIfEmpty(
         newFormData?.extraData?.reusableChoices,
@@ -108,6 +115,16 @@ function App() {
     title: "Study File",
     type: "object",
     definitions: {
+      streamsOrderOnADay: {
+        type: "array",
+        items: {
+          type: "string",
+          enum: streamIds,
+        },
+        minItems: pingsFrequencyCount,
+        maxItems: pingsFrequencyCount,
+      },
+
       sliderQuestion: {
         properties: {
           type: {
@@ -477,6 +494,7 @@ function App() {
           "startDate",
           "endDate",
           "pingsFrequency",
+          "streamsOrder",
         ],
         properties: {
           id: {
@@ -617,6 +635,60 @@ function App() {
               required: ["earliestPingNotificationTime", "expireAfterTime"],
             },
             minItems: 1,
+          },
+
+          streamsOrder: {
+            oneOf: [
+              {
+                title: "Different order of streams every day of the week",
+                type: "object",
+                properties: {
+                  sunday: {
+                    title: "Sunday",
+                    $ref: "#/definitions/streamsOrderOnADay",
+                  },
+                  monday: {
+                    title: "Monday",
+                    $ref: "#/definitions/streamsOrderOnADay",
+                  },
+                  tuesday: {
+                    title: "Tuesday",
+                    $ref: "#/definitions/streamsOrderOnADay",
+                  },
+                  wednesday: {
+                    title: "Wednesday",
+                    $ref: "#/definitions/streamsOrderOnADay",
+                  },
+                  thursday: {
+                    title: "Thursday",
+                    $ref: "#/definitions/streamsOrderOnADay",
+                  },
+                  friday: {
+                    title: "Friday",
+                    $ref: "#/definitions/streamsOrderOnADay",
+                  },
+                  saturday: {
+                    title: "Saturday",
+                    $ref: "#/definitions/streamsOrderOnADay",
+                  },
+                },
+                required: [
+                  "sunday",
+                  "monday",
+                  "tuesday",
+                  "wednesday",
+                  "thursday",
+                  "friday",
+                  "saturday",
+                ],
+              },
+              // It is important that this comes after that because the reverse
+              // order seems to not update the oneOf selection during loading.
+              {
+                title: "Same order of streams every day of the week",
+                $ref: "#/definitions/streamsOrderOnADay",
+              },
+            ],
           },
         },
       },
@@ -923,6 +995,11 @@ function App() {
             <h2>Form JSON</h2>
             <pre id="study-file-json">{JSON.stringify(formData, null, 2)}</pre>
 
+            <pre>
+              pingsFrequencyCount:{" "}
+              {JSON.stringify(pingsFrequencyCount, null, 2)}
+            </pre>
+            <pre>streamIds: {JSON.stringify(streamIds, null, 2)}</pre>
             <pre>
               choicesListsIds: {JSON.stringify(choicesListsIds, null, 2)}
             </pre>
