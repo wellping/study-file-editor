@@ -1,4 +1,5 @@
 import * as WellPingTypes from "@wellping/study-schemas/lib/types";
+import { StudyFileSchema as WellPingStudyFileSchema } from "@wellping/study-schemas/lib/schemas/StudyFile";
 
 type EditorStream = any;
 type EditorStreams = EditorStream[];
@@ -286,5 +287,9 @@ export function getWellPingStudyFileFromEditorObject(
     streams,
     extraData,
   };
+
+  // An error will be thrown if parsing fails.
+  WellPingStudyFileSchema.parse(studyFile);
+
   return studyFile;
 }
