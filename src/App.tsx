@@ -700,6 +700,14 @@ function App() {
             title: "Stream to show when there is an error",
             $ref: "#/definitions/streamSelection",
           },
+
+          streamsNotReplacedByFollowupStream: {
+            title: "Streams Not To Be Replaced By Followup Streams",
+            type: "array",
+            items: {
+              $ref: "#/definitions/streamSelection",
+            },
+          },
         },
       },
       streams: {
