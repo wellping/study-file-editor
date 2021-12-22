@@ -115,11 +115,15 @@ function App() {
     title: "Study File",
     type: "object",
     definitions: {
+      streamSelection: {
+        type: "string",
+        enum: streamIds,
+      },
+
       streamsOrderOnADay: {
         type: "array",
         items: {
-          type: "string",
-          enum: streamIds,
+          $ref: "#/definitions/streamSelection",
         },
         minItems: pingsFrequencyCount,
         maxItems: pingsFrequencyCount,
@@ -495,6 +499,7 @@ function App() {
           "endDate",
           "pingsFrequency",
           "streamsOrder",
+          "streamInCaseOfError",
         ],
         properties: {
           id: {
@@ -689,6 +694,11 @@ function App() {
                 $ref: "#/definitions/streamsOrderOnADay",
               },
             ],
+          },
+
+          streamInCaseOfError: {
+            title: "Stream to show when there is an error",
+            $ref: "#/definitions/streamSelection",
           },
         },
       },
