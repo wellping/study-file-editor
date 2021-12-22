@@ -763,6 +763,12 @@ function App() {
             },
             required: ["default"],
           },
+
+          alwaysEnableNextButton: {
+            title: "Always Enable Next Button",
+            type: "boolean",
+            default: false,
+          },
         },
       },
       streams: {
