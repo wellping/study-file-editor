@@ -500,6 +500,7 @@ function App() {
           "pingsFrequency",
           "streamsOrder",
           "streamInCaseOfError",
+          "notificationContent",
         ],
         properties: {
           id: {
@@ -707,6 +708,60 @@ function App() {
             items: {
               $ref: "#/definitions/streamSelection",
             },
+            default: [],
+          },
+
+          notificationContent: {
+            type: "object",
+            title: "Notification Content",
+            properties: {
+              default: {
+                type: "object",
+                title: "Default Notification",
+                properties: {
+                  title: {
+                    title: "Notification Title",
+                    type: "string",
+                  },
+                  body: {
+                    title: "Notification Body",
+                    type: "string",
+                  },
+                },
+                required: ["title", "body"],
+              },
+              bonus: {
+                title: "Notification for Bonus",
+                oneOf: [
+                  {
+                    title: "No special notification when having bonus",
+                    type: "null",
+                  },
+                  {
+                    type: "object",
+                    title: "Special notification when having bonus",
+                    properties: {
+                      title: {
+                        title: "Notification Title",
+                        type: "string",
+                      },
+                      body: {
+                        title: "Notification Body",
+                        type: "string",
+                      },
+                      numberOfCompletionEachWeek: {
+                        title: "Shown before number of completion each week",
+                        type: "integer",
+                        minimum: 1,
+                        maximum: pingsFrequencyCount * 7, // `pingsFrequencyCount` streams per day.
+                      },
+                    },
+                    required: ["title", "body", "numberOfCompletionEachWeek"],
+                  },
+                ],
+              },
+            },
+            required: ["default"],
           },
         },
       },
