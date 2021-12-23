@@ -107,8 +107,13 @@ function processYesNoQuestion(
   return yesNoQuestion;
 }
 
+type LineSeparatedString = { lineSeparatedString: string };
+function processChoicesList(input: string[] | LineSeparatedString): string[];
 function processChoicesList(
-  input: string[] | string | { lineSeparatedString: string },
+  input: string[] | string | LineSeparatedString,
+): string[] | string;
+function processChoicesList(
+  input: string[] | string | LineSeparatedString,
 ): string[] | string {
   if (Array.isArray(input)) {
     return input; // Directly return the array.
@@ -121,7 +126,7 @@ function processChoicesList(
   }
 }
 function processOptionalChoicesList(
-  input: null | string[] | string | { lineSeparatedString: string },
+  input: null | string[] | string | LineSeparatedString,
 ): string[] | string | undefined {
   if (input === null) {
     // Schema requires it to be `undefined` instead of `null`.
@@ -371,15 +376,13 @@ export function getWellPingStudyFileFromEditorObject(
     );
   studyInfo.streamsStartingQuestionIds = streamsStartingQuestionIds;
 
-  replaceIDValueArrayWithObject<
-    | string[]
-    | {
-        lineSeparatedString: string;
-      },
-    string[]
-  >(editorObject.extraData, "reusableChoices", (_, value) => {
-    return processChoicesList(value) as string[];
-  });
+  replaceIDValueArrayWithObject<string[] | LineSeparatedString, string[]>(
+    editorObject.extraData,
+    "reusableChoices",
+    (_, value) => {
+      return processChoicesList(value);
+    },
+  );
 
   const extraData: WellPingTypes.ExtraData = editorObject.extraData;
 
