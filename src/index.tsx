@@ -1,8 +1,9 @@
+import "./global";
+
 import React from "react";
 import ReactDOM from "react-dom";
 import "bootstrap/dist/css/bootstrap.css";
 import "./index.css";
-import "./global";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 
