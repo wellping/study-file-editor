@@ -4,6 +4,7 @@ import { saveAs } from "file-saver";
 import { JSONSchema7 } from "json-schema";
 import "./App.css";
 import { getWellPingStudyFileFromEditorObject } from "./helper";
+import { getIDValueArraySchema } from "./json-schema-helper";
 import {
   ID_REGEX,
   QUESTION_ID_REGEX,
@@ -770,99 +771,94 @@ function App() {
             default: false,
           },
 
-          specialVariablePlaceholderTreatments: {
-            title: "Special Variable Placeholder Treatments",
-            type: "array",
-            items: {
+          specialVariablePlaceholderTreatments: getIDValueArraySchema(
+            {
+              title: "Special Variable Placeholder Treatments",
+            },
+            {
+              title: "Variable Name or Question ID",
+              type: "string",
+              // Since this could be a variable name or a question ID
+              pattern: QUESTION_ID_REGEX,
+            },
+            {
               type: "object",
-              required: ["id", "options"],
               properties: {
-                id: {
-                  title: "Variable Name or Question ID",
-                  type: "string",
-                  // Since this could be a variable name or a question ID
-                  pattern: QUESTION_ID_REGEX,
-                },
-                options: {
+                decapitalizeFirstCharacter: {
+                  title: "Decapitalize First Character",
                   type: "object",
                   properties: {
-                    decapitalizeFirstCharacter: {
-                      title: "Decapitalize First Character",
-                      type: "object",
-                      properties: {
-                        enabled: {
-                          type: "boolean",
-                          default: true,
-                        },
-                        optionsType: {
-                          title: "Options",
-                          type: "string",
-                          enum: ["No option", "Excludes", "Includes"],
-                          default: "No option",
-                        },
-                      },
-                      required: ["enabled", "optionsType"],
-                      dependencies: {
-                        optionsType: {
-                          oneOf: [
-                            {
-                              properties: {
-                                optionsType: {
-                                  enum: ["No option"],
-                                },
-                              },
+                    enabled: {
+                      type: "boolean",
+                      default: true,
+                    },
+                    optionsType: {
+                      title: "Options",
+                      type: "string",
+                      enum: ["No option", "Excludes", "Includes"],
+                      default: "No option",
+                    },
+                  },
+                  required: ["enabled", "optionsType"],
+                  dependencies: {
+                    optionsType: {
+                      oneOf: [
+                        {
+                          properties: {
+                            optionsType: {
+                              enum: ["No option"],
                             },
-                            {
+                          },
+                        },
+                        {
+                          properties: {
+                            optionsType: {
+                              enum: ["Excludes"],
+                            },
+                            options: {
+                              title: "Strings to exclude",
                               properties: {
-                                optionsType: {
-                                  enum: ["Excludes"],
-                                },
-                                options: {
-                                  title: "Strings to exclude",
-                                  properties: {
-                                    excludes: {
-                                      title: "",
-                                      type: "array",
-                                      items: {
-                                        type: "string",
-                                      },
-                                    },
+                                excludes: {
+                                  title: "",
+                                  type: "array",
+                                  items: {
+                                    type: "string",
                                   },
-                                  required: ["excludes"],
                                 },
                               },
-                              required: ["options"],
+                              required: ["excludes"],
                             },
-                            {
-                              properties: {
-                                optionsType: {
-                                  enum: ["Includes"],
-                                },
-                                options: {
-                                  title: "Strings to include",
-                                  properties: {
-                                    includes: {
-                                      title: "",
-                                      type: "array",
-                                      items: {
-                                        type: "string",
-                                      },
-                                    },
-                                  },
-                                  required: ["includes"],
-                                },
-                              },
-                              required: ["options"],
-                            },
-                          ],
+                          },
+                          required: ["options"],
                         },
-                      },
+                        {
+                          properties: {
+                            optionsType: {
+                              enum: ["Includes"],
+                            },
+                            options: {
+                              title: "Strings to include",
+                              properties: {
+                                includes: {
+                                  title: "",
+                                  type: "array",
+                                  items: {
+                                    type: "string",
+                                  },
+                                },
+                              },
+                              required: ["includes"],
+                            },
+                          },
+                          required: ["options"],
+                        },
+                      ],
                     },
                   },
                 },
               },
             },
-          },
+          ),
         },
       },
       streams: {

@@ -284,6 +284,30 @@ function getWellPingStreamsFromEditorStreams(
   return [streams, streamsStartingQuestionIds];
 }
 
+function getObjectFromIDValueArray<T, R>(
+  array: { id: string; value: T }[] = [],
+  transform: (value: T) => R,
+): {
+  [key: string]: R;
+} {
+  const object: { [key: string]: R } = {};
+  for (const item of array) {
+    object[item.id] = transform(item.value);
+  }
+  return object;
+}
+
+function replaceIDValueArrayWithObject<T, R>(
+  arrayParent: { [key: string]: any },
+  arrayKey: string,
+  transform: (value: T) => R,
+): void {
+  arrayParent[arrayKey] = getObjectFromIDValueArray(
+    arrayParent[arrayKey],
+    transform,
+  );
+}
+
 export function getWellPingStudyFileFromEditorObject(
   editorObject_ori: any,
 ): WellPingTypes.StudyFile {
@@ -294,12 +318,11 @@ export function getWellPingStudyFileFromEditorObject(
   deleteEmptyObject(editorObject.studyInfo.server, "beiwe");
   deleteEmptyObject(editorObject.studyInfo.server, "firebase");
 
-  const specialVariablePlaceholderTreatments: {
-    [key: string]: WellPingTypes.PlaceholderReplacementValueTreatmentOptions;
-  } = {};
-  for (const t of editorObject.studyInfo.specialVariablePlaceholderTreatments ??
-    []) {
-    const decap = t.options.decapitalizeFirstCharacter ?? {};
+  replaceIDValueArrayWithObject<
+    any,
+    WellPingTypes.PlaceholderReplacementValueTreatmentOptions
+  >(editorObject.studyInfo, "specialVariablePlaceholderTreatments", (value) => {
+    const decap = value.decapitalizeFirstCharacter ?? {};
     switch (decap.optionsType) {
       case "No option":
         break;
@@ -314,10 +337,8 @@ export function getWellPingStudyFileFromEditorObject(
     }
     delete decap.optionsType;
 
-    specialVariablePlaceholderTreatments[t.id] = t.options;
-  }
-  editorObject.studyInfo.specialVariablePlaceholderTreatments =
-    specialVariablePlaceholderTreatments;
+    return value;
+  });
 
   const studyInfo: WellPingTypes.StudyInfo = editorObject.studyInfo;
 
