@@ -32,6 +32,10 @@ legend {
   border-radius: 5px;
 }
 
+.form-group:last-child {
+  margin-bottom: 2px;
+}
+
 /*
  Sad hack to make the array toolbar width smaller :(
  https://github.com/rjsf-team/react-jsonschema-form/blob/76ab08c5b06b1cbecd03fab0bdbca64b69b5c038/packages/core/src/components/fields/ArrayField.js#L48-L53
