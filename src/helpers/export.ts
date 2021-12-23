@@ -1,7 +1,12 @@
 import * as WellPingTypes from "@wellping/study-schemas/lib/types";
 import { StudyFileSchema as WellPingStudyFileSchema } from "@wellping/study-schemas/lib/schemas/StudyFile";
 
-import { cloneObject } from "./common";
+import {
+  cloneObject,
+  ONEOF_OPTION_NAME_KEY,
+  ONEOF_OPTION_VALUE_KEY,
+  ONEOF_OPTION_VALUE_KEY_PREFIX,
+} from "./common";
 
 type EditorStream = any;
 type EditorStreams = EditorStream[];
@@ -324,6 +329,53 @@ function replaceIDValueArrayWithObject<T, R>(
   );
 }
 
+function extractAndMergeOneOfOptions(
+  parentObject: {
+    // Actually just `key` (not every key).
+    [key: string]: {
+      [ONEOF_OPTION_NAME_KEY]?: string;
+      [optionName: string]: any;
+    };
+  },
+  key: string,
+): void {
+  if (
+    !(ONEOF_OPTION_NAME_KEY in parentObject[key]) ||
+    parentObject[key][ONEOF_OPTION_NAME_KEY] === undefined
+  ) {
+    return;
+  }
+
+  const optionName = parentObject[key][ONEOF_OPTION_NAME_KEY] as string;
+  const optionValue = parentObject[key][ONEOF_OPTION_VALUE_KEY(optionName)];
+  let clonedOptionValue: any;
+  if (optionValue === undefined) {
+    // This happens when there is no extra option value with this option name.
+    clonedOptionValue = undefined;
+  } else {
+    // Get the value (clone it so we can still use it after deleting them).
+    clonedOptionValue = cloneObject(optionValue);
+  }
+
+  // Delete all `_option` related keys.
+  delete parentObject[key][ONEOF_OPTION_NAME_KEY];
+  for (const childKey of Object.keys(parentObject[key])) {
+    if (childKey.startsWith(ONEOF_OPTION_VALUE_KEY_PREFIX)) {
+      delete parentObject[key][childKey];
+    }
+  }
+
+  if (Object.keys(parentObject[key]).length > 0) {
+    // If there are other keys remaining in the object, we merge it.
+    Object.assign(parentObject[key], clonedOptionValue);
+  } else {
+    // Otherwise we set the key's value as the value
+    // (this is useful in the case where we don't have anything else in the object
+    // and the value is array or integer).
+    parentObject[key] = clonedOptionValue;
+  }
+}
+
 export function getWellPingStudyFileFromEditorObject(
   editorObject_ori: any,
 ): WellPingTypes.StudyFile {
@@ -342,24 +394,12 @@ export function getWellPingStudyFileFromEditorObject(
     "specialVariablePlaceholderTreatments",
     (_, value) => {
       const decap = value.decapitalizeFirstCharacter ?? {};
-      switch (decap.optionsType) {
-        case "No option":
-          delete decap.options;
-          break;
-
-        case "Excludes":
-          delete decap.options.includes;
-          break;
-
-        case "Includes":
-          delete decap.options.excludes;
-          break;
-      }
-      delete decap.optionsType;
-
+      extractAndMergeOneOfOptions(decap, "options");
       return value;
     },
   );
+
+  extractAndMergeOneOfOptions(editorObject.studyInfo, "streamsOrder");
 
   const studyInfo: WellPingTypes.StudyInfo = editorObject.studyInfo;
 

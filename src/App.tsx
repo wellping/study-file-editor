@@ -4,7 +4,10 @@ import { saveAs } from "file-saver";
 import { JSONSchema7 } from "json-schema";
 import "./App.css";
 import { getWellPingStudyFileFromEditorObject } from "./helpers/export";
-import { getIDValueArraySchema } from "./helpers/json-schema";
+import {
+  getIDValueArraySchema,
+  getOneOfDependencySchema,
+} from "./helpers/json-schema";
 import {
   ID_REGEX,
   QUESTION_ID_REGEX,
@@ -644,9 +647,14 @@ function App() {
             minItems: 1,
           },
 
-          streamsOrder: {
-            oneOf: [
-              {
+          streamsOrder: getOneOfDependencySchema({
+            defaultOption: "Same order of streams every day of the week",
+            options: {
+              "Same order of streams every day of the week": {
+                title: "Same order of streams every day of the week",
+                $ref: "#/definitions/streamsOrderOnADay",
+              },
+              "Different order of streams every day of the week": {
                 title: "Different order of streams every day of the week",
                 type: "object",
                 properties: {
@@ -689,14 +697,8 @@ function App() {
                   "saturday",
                 ],
               },
-              // It is important that this comes after that because the reverse
-              // order seems to not update the oneOf selection during loading.
-              {
-                title: "Same order of streams every day of the week",
-                $ref: "#/definitions/streamsOrderOnADay",
-              },
-            ],
-          },
+            },
+          }),
 
           streamInCaseOfError: {
             title: "Stream to show when there is an error",
@@ -787,73 +789,49 @@ function App() {
                 decapitalizeFirstCharacter: {
                   title: "Decapitalize First Character",
                   type: "object",
+                  required: ["enabled", "options"],
                   properties: {
                     enabled: {
                       type: "boolean",
                       default: true,
                     },
-                    optionsType: {
-                      title: "Options",
-                      type: "string",
-                      enum: ["No option", "Excludes", "Includes"],
-                      default: "No option",
-                    },
-                  },
-                  required: ["enabled", "optionsType"],
-                  dependencies: {
-                    optionsType: {
-                      oneOf: [
-                        {
+                    options: getOneOfDependencySchema({
+                      objectSchema: {
+                        title: "",
+                      },
+                      defaultOption: "No option",
+                      options: {
+                        "No option": null,
+                        Excludes: {
+                          title: "Strings to exclude",
                           properties: {
-                            optionsType: {
-                              enum: ["No option"],
-                            },
-                          },
-                        },
-                        {
-                          properties: {
-                            optionsType: {
-                              enum: ["Excludes"],
-                            },
-                            options: {
-                              title: "Strings to exclude",
-                              properties: {
-                                excludes: {
-                                  title: "",
-                                  type: "array",
-                                  items: {
-                                    type: "string",
-                                  },
-                                },
+                            excludes: {
+                              title: "",
+                              type: "array",
+                              items: {
+                                type: "string",
                               },
-                              required: ["excludes"],
+                              default: [],
                             },
                           },
-                          required: ["options"],
+                          required: ["excludes"],
                         },
-                        {
+                        Includes: {
+                          title: "Strings to include",
                           properties: {
-                            optionsType: {
-                              enum: ["Includes"],
-                            },
-                            options: {
-                              title: "Strings to include",
-                              properties: {
-                                includes: {
-                                  title: "",
-                                  type: "array",
-                                  items: {
-                                    type: "string",
-                                  },
-                                },
+                            includes: {
+                              title: "",
+                              type: "array",
+                              items: {
+                                type: "string",
                               },
-                              required: ["includes"],
+                              default: [],
                             },
                           },
-                          required: ["options"],
+                          required: ["includes"],
                         },
-                      ],
-                    },
+                      },
+                    }),
                   },
                 },
               },
