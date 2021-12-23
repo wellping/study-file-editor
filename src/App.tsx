@@ -769,6 +769,100 @@ function App() {
             type: "boolean",
             default: false,
           },
+
+          specialVariablePlaceholderTreatments: {
+            title: "Special Variable Placeholder Treatments",
+            type: "array",
+            items: {
+              type: "object",
+              required: ["id", "options"],
+              properties: {
+                id: {
+                  title: "Variable Name or Question ID",
+                  type: "string",
+                  // Since this could be a variable name or a question ID
+                  pattern: QUESTION_ID_REGEX,
+                },
+                options: {
+                  type: "object",
+                  properties: {
+                    decapitalizeFirstCharacter: {
+                      title: "Decapitalize First Character",
+                      type: "object",
+                      properties: {
+                        enabled: {
+                          type: "boolean",
+                          default: true,
+                        },
+                        optionsType: {
+                          title: "Options",
+                          type: "string",
+                          enum: ["No option", "Excludes", "Includes"],
+                          default: "No option",
+                        },
+                      },
+                      required: ["enabled", "optionsType"],
+                      dependencies: {
+                        optionsType: {
+                          oneOf: [
+                            {
+                              properties: {
+                                optionsType: {
+                                  enum: ["No option"],
+                                },
+                              },
+                            },
+                            {
+                              properties: {
+                                optionsType: {
+                                  enum: ["Excludes"],
+                                },
+                                options: {
+                                  title: "Strings to exclude",
+                                  properties: {
+                                    excludes: {
+                                      title: "",
+                                      type: "array",
+                                      items: {
+                                        type: "string",
+                                      },
+                                    },
+                                  },
+                                  required: ["excludes"],
+                                },
+                              },
+                              required: ["options"],
+                            },
+                            {
+                              properties: {
+                                optionsType: {
+                                  enum: ["Includes"],
+                                },
+                                options: {
+                                  title: "Strings to include",
+                                  properties: {
+                                    includes: {
+                                      title: "",
+                                      type: "array",
+                                      items: {
+                                        type: "string",
+                                      },
+                                    },
+                                  },
+                                  required: ["includes"],
+                                },
+                              },
+                              required: ["options"],
+                            },
+                          ],
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       },
       streams: {

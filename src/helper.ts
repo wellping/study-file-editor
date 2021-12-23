@@ -293,6 +293,32 @@ export function getWellPingStudyFileFromEditorObject(
   // Delete empty objects.
   deleteEmptyObject(editorObject.studyInfo.server, "beiwe");
   deleteEmptyObject(editorObject.studyInfo.server, "firebase");
+
+  const specialVariablePlaceholderTreatments: {
+    [key: string]: WellPingTypes.PlaceholderReplacementValueTreatmentOptions;
+  } = {};
+  for (const t of editorObject.studyInfo.specialVariablePlaceholderTreatments ??
+    []) {
+    const decap = t.options.decapitalizeFirstCharacter ?? {};
+    switch (decap.optionsType) {
+      case "No option":
+        break;
+
+      case "Excludes":
+        delete decap.options.includes;
+        break;
+
+      case "Includes":
+        delete decap.options.excludes;
+        break;
+    }
+    delete decap.optionsType;
+
+    specialVariablePlaceholderTreatments[t.id] = t.options;
+  }
+  editorObject.studyInfo.specialVariablePlaceholderTreatments =
+    specialVariablePlaceholderTreatments;
+
   const studyInfo: WellPingTypes.StudyInfo = editorObject.studyInfo;
 
   const reusableQuestionBlocksMap: EditorReusableQuestionBlocks = {};
