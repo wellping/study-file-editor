@@ -21,8 +21,11 @@ fieldset,
 .panel-default {
   border: 1px solid #c0c0c0;
   border-radius: 5px;
-  margin: 0 2px;
-  padding: 0.35em 0em 0.75em 0.625em;
+  margin: 0 0;
+  padding: 0 0 0 0.625em;
+}
+.panel-body {
+  padding-top: 10px;
 }
 legend {
   border: 1px solid #c0c0c0;
