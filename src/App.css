@@ -17,6 +17,18 @@
   margin-bottom: 10px;
 }
 
+fieldset,
+.panel-default {
+  border: 1px solid #c0c0c0;
+  border-radius: 5px;
+  margin: 0 2px;
+  padding: 0.35em 0em 0.75em 0.625em;
+}
+legend {
+  border: 1px solid #c0c0c0;
+  border-radius: 5px;
+}
+
 /*
  Sad hack to make the array toolbar width smaller :(
  https://github.com/rjsf-team/react-jsonschema-form/blob/76ab08c5b06b1cbecd03fab0bdbca64b69b5c038/packages/core/src/components/fields/ArrayField.js#L48-L53
