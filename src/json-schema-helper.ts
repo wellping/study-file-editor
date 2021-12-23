@@ -1,10 +1,16 @@
 import { JSONSchema7 } from "json-schema";
 
-export function getIDValueArraySchema(
-  objectSchema: JSONSchema7,
-  idSchema: JSONSchema7,
-  valueSchema: JSONSchema7,
-): JSONSchema7 {
+export function getIDValueArraySchema({
+  objectSchema = {},
+  itemSchema = {},
+  idSchema = {},
+  valueSchema,
+}: {
+  objectSchema?: JSONSchema7;
+  itemSchema?: JSONSchema7;
+  idSchema?: JSONSchema7;
+  valueSchema: JSONSchema7;
+}): JSONSchema7 {
   return {
     type: "array",
     items: {
@@ -17,6 +23,7 @@ export function getIDValueArraySchema(
         },
         value: valueSchema,
       },
+      ...itemSchema,
     },
     ...objectSchema,
   };

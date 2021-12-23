@@ -270,31 +270,36 @@ function getWellPingStreamsFromEditorStreams(
   editorStreams: EditorStreams,
   editorReusableQuestionBlocks: EditorReusableQuestionBlocks,
 ): [WellPingTypes.Streams, WellPingTypes.StreamsStartingQuestionIds] {
-  const streams: WellPingTypes.Streams = {};
   const streamsStartingQuestionIds: WellPingTypes.StreamsStartingQuestionIds =
     {};
-  for (const editorStream of editorStreams) {
+
+  const streams: WellPingTypes.Streams = getObjectFromIDValueArray<
+    EditorQuestionsList,
+    WellPingTypes.QuestionsList
+  >(editorStreams, (id, value) => {
     const [questionsList, firstQuestionId] =
       getWellPingQuestionsListFromEditorQuestionsList(
-        editorStream.questions,
+        value,
         editorReusableQuestionBlocks,
       );
 
-    streams[editorStream.id] = questionsList;
-    streamsStartingQuestionIds[editorStream.id] = firstQuestionId;
-  }
+    streamsStartingQuestionIds[id] = firstQuestionId;
+
+    return questionsList;
+  });
+
   return [streams, streamsStartingQuestionIds];
 }
 
 function getObjectFromIDValueArray<T, R>(
   array: { id: string; value: T }[] = [],
-  transform: (value: T) => R,
+  transform: (id: string, value: T) => R,
 ): {
   [key: string]: R;
 } {
   const object: { [key: string]: R } = {};
   for (const item of array) {
-    object[item.id] = transform(item.value);
+    object[item.id] = transform(item.id, item.value);
   }
   return object;
 }
@@ -302,8 +307,12 @@ function getObjectFromIDValueArray<T, R>(
 function replaceIDValueArrayWithObject<T, R>(
   arrayParent: { [key: string]: any },
   arrayKey: string,
-  transform: (value: T) => R,
+  transform: (id: string, value: T) => R,
 ): void {
+  if (!(arrayKey in arrayParent)) {
+    return;
+  }
+
   arrayParent[arrayKey] = getObjectFromIDValueArray(
     arrayParent[arrayKey],
     transform,
@@ -323,32 +332,37 @@ export function getWellPingStudyFileFromEditorObject(
   replaceIDValueArrayWithObject<
     any,
     WellPingTypes.PlaceholderReplacementValueTreatmentOptions
-  >(editorObject.studyInfo, "specialVariablePlaceholderTreatments", (value) => {
-    const decap = value.decapitalizeFirstCharacter ?? {};
-    switch (decap.optionsType) {
-      case "No option":
-        break;
+  >(
+    editorObject.studyInfo,
+    "specialVariablePlaceholderTreatments",
+    (_, value) => {
+      const decap = value.decapitalizeFirstCharacter ?? {};
+      switch (decap.optionsType) {
+        case "No option":
+          delete decap.options;
+          break;
 
-      case "Excludes":
-        delete decap.options.includes;
-        break;
+        case "Excludes":
+          delete decap.options.includes;
+          break;
 
-      case "Includes":
-        delete decap.options.excludes;
-        break;
-    }
-    delete decap.optionsType;
+        case "Includes":
+          delete decap.options.excludes;
+          break;
+      }
+      delete decap.optionsType;
 
-    return value;
-  });
+      return value;
+    },
+  );
 
   const studyInfo: WellPingTypes.StudyInfo = editorObject.studyInfo;
 
-  const reusableQuestionBlocksMap: EditorReusableQuestionBlocks = {};
-  for (const reusableQuestionBlock of editorObject.reusableQuestionBlocks) {
-    reusableQuestionBlocksMap[reusableQuestionBlock.id] =
-      reusableQuestionBlock.questions;
-  }
+  const reusableQuestionBlocksMap: EditorReusableQuestionBlocks =
+    getObjectFromIDValueArray<any, EditorQuestionsList>(
+      editorObject.reusableQuestionBlocks,
+      (_, value) => value,
+    );
 
   const [streams, streamsStartingQuestionIds] =
     getWellPingStreamsFromEditorStreams(
@@ -357,12 +371,16 @@ export function getWellPingStudyFileFromEditorObject(
     );
   studyInfo.streamsStartingQuestionIds = streamsStartingQuestionIds;
 
-  const reusableChoices: { [key: string]: string[] } = {};
-  for (const reusableChoice of editorObject.extraData?.reusableChoices ?? []) {
-    const choices = processChoicesList(reusableChoice.items) as string[];
-    reusableChoices[reusableChoice.id] = choices;
-  }
-  editorObject.extraData.reusableChoices = reusableChoices;
+  replaceIDValueArrayWithObject<
+    | string[]
+    | {
+        lineSeparatedString: string;
+      },
+    string[]
+  >(editorObject.extraData, "reusableChoices", (_, value) => {
+    return processChoicesList(value) as string[];
+  });
+
   const extraData: WellPingTypes.ExtraData = editorObject.extraData;
 
   const studyFile: WellPingTypes.StudyFile = {

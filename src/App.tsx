@@ -771,17 +771,17 @@ function App() {
             default: false,
           },
 
-          specialVariablePlaceholderTreatments: getIDValueArraySchema(
-            {
+          specialVariablePlaceholderTreatments: getIDValueArraySchema({
+            objectSchema: {
               title: "Special Variable Placeholder Treatments",
             },
-            {
+            idSchema: {
               title: "Variable Name or Question ID",
               type: "string",
               // Since this could be a variable name or a question ID
               pattern: QUESTION_ID_REGEX,
             },
-            {
+            valueSchema: {
               type: "object",
               properties: {
                 decapitalizeFirstCharacter: {
@@ -858,72 +858,63 @@ function App() {
                 },
               },
             },
-          ),
+          }),
         },
       },
-      streams: {
-        title: "Streams",
-        type: "array",
-        items: {
+      streams: getIDValueArraySchema({
+        objectSchema: {
+          title: "Streams",
+          minItems: 1,
+        },
+        itemSchema: {
           title: "Stream",
-          type: "object",
-          properties: {
-            id: {
-              type: "string",
-              title: "Stream ID",
-              pattern: ID_REGEX,
-            },
-            questions: {
-              title: "Stream Questions",
-              $ref: "#/definitions/listOfNonEmptyQuestions",
-            },
-          },
-          required: ["id", "questions"],
         },
-        minItems: 1,
-      },
+        idSchema: {
+          type: "string",
+          title: "Stream ID",
+          pattern: ID_REGEX,
+        },
+        valueSchema: {
+          title: "Stream Questions",
+          $ref: "#/definitions/listOfNonEmptyQuestions",
+        },
+      }),
       extraData: {
         title: "Extra Data",
         type: "object",
         properties: {
-          reusableChoices: {
-            title: "Reusable Choices Lists",
-            type: "array",
-            items: {
-              title: "Choices List",
-              type: "object",
-              properties: {
-                id: {
-                  title: "Choices List ID",
-                  type: "string",
-                },
-                items: {
-                  $ref: "#/definitions/choiceQuestion_choices_list",
-                },
-              },
-              required: ["id", "items"],
+          reusableChoices: getIDValueArraySchema({
+            objectSchema: {
+              title: "Reusable Choices Lists",
             },
-          },
-        },
-      },
-      reusableQuestionBlocks: {
-        title: "Reusable Question Blocks",
-        type: "array",
-        items: {
-          title: "Question Block",
-          type: "object",
-          properties: {
-            id: {
-              title: "Question Block ID",
+            itemSchema: {
+              title: "Choices List",
+            },
+            idSchema: {
+              title: "Choices List ID",
               type: "string",
             },
-            questions: {
-              $ref: "#/definitions/listOfNonEmptyQuestions",
+            valueSchema: {
+              $ref: "#/definitions/choiceQuestion_choices_list",
             },
-          },
-          required: ["id", "questions"],
+          }),
         },
       },
+      reusableQuestionBlocks: getIDValueArraySchema({
+        objectSchema: {
+          title: "Reusable Question Blocks",
+        },
+        itemSchema: {
+          title: "Question Block",
+        },
+        idSchema: {
+          title: "Question Block ID",
+          type: "string",
+        },
+        valueSchema: {
+          $ref: "#/definitions/listOfNonEmptyQuestions",
+        },
+      }),
     },
 
     required: ["studyInfo", "streams"],
