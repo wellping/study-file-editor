@@ -1,5 +1,6 @@
 import * as WellPingTypes from "@wellping/study-schemas/lib/types";
 import { StudyFileSchema as WellPingStudyFileSchema } from "@wellping/study-schemas/lib/schemas/StudyFile";
+import * as WellPingQuestionSchema from "@wellping/study-schemas/lib/schemas/Question";
 
 import {
   cloneObject,
@@ -76,14 +77,17 @@ function processMultipleTextQuestion(
     editorReusableQuestionBlocks,
   );
   delete editorMultipleTextQuestion.repeatedQuestions;
+  editorMultipleTextQuestion.repeatedItemStartId = firstSubQuestionId;
 
   editorMultipleTextQuestion.choices = processOptionalChoicesList(
     editorMultipleTextQuestion.choices,
   );
 
   const multipleTextQuestion: WellPingTypes.MultipleTextQuestion =
-    editorMultipleTextQuestion;
-  multipleTextQuestion.repeatedItemStartId = firstSubQuestionId;
+    WellPingQuestionSchema.getMultipleTextQuestionSchema({
+      strict: false,
+    }).parse(editorMultipleTextQuestion);
+
   return multipleTextQuestion;
 }
 
@@ -105,10 +109,13 @@ function processYesNoQuestion(
 
   delete editorYesNoQuestion.branches;
 
-  const yesNoQuestion: WellPingTypes.YesNoQuestion = editorYesNoQuestion;
-  yesNoQuestion.branchStartId = {};
-  yesNoQuestion.branchStartId.yes = firstSubQuestionId_yes;
-  yesNoQuestion.branchStartId.no = firstSubQuestionId_no;
+  editorYesNoQuestion.branchStartId = {};
+  editorYesNoQuestion.branchStartId.yes = firstSubQuestionId_yes;
+  editorYesNoQuestion.branchStartId.no = firstSubQuestionId_no;
+  const yesNoQuestion: WellPingTypes.YesNoQuestion =
+    WellPingQuestionSchema.getYesNoQuestionSchema({
+      strict: false,
+    }).parse(editorYesNoQuestion);
   return yesNoQuestion;
 }
 
@@ -182,7 +189,9 @@ function processChoiceQuestion(
 
   delete editorChoiceQuestion.specialCasesBranches;
 
-  return editorChoiceQuestion as WellPingTypes.ChoicesQuestion;
+  return WellPingQuestionSchema.getChoicesQuestionSchema({
+    strict: false,
+  }).parse(editorChoiceQuestion) as WellPingTypes.ChoicesQuestion;
 }
 
 /**
@@ -237,6 +246,8 @@ function getWellPingQuestionsListFromEditorQuestionsList(
 
     let question: WellPingTypes.Question;
 
+    editorQuestion.next = nextQuestionId;
+
     switch (editorQuestion.type as WellPingTypes.QuestionTypeType) {
       case "MultipleText":
         question = processMultipleTextQuestion(
@@ -267,8 +278,6 @@ function getWellPingQuestionsListFromEditorQuestionsList(
         question = editorQuestion;
         break;
     }
-
-    question.next = nextQuestionId;
 
     questionsList[questionId] = question;
   }

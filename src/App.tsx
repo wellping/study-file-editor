@@ -375,6 +375,7 @@ function App() {
           },
           max: {
             type: "integer",
+            minimum: 1,
           },
           maxMinus: {
             type: "string",
@@ -386,6 +387,11 @@ function App() {
         required: ["indexName", "variableName", "max"],
       },
 
+      // Notice that ideally we would want to use `getOneOfDependencySchema`
+      // for this. But there seems to be some bugs with `react-jsonschema-form`
+      // with dependency with default value of ref in ref.
+      // So instead, we just strip keys that do not belong to the selected type
+      // when exporting.
       question: {
         type: "object",
         required: ["id", "question", "type"],
