@@ -1,6 +1,8 @@
 import * as WellPingTypes from "@wellping/study-schemas/lib/types";
 import { StudyFileSchema as WellPingStudyFileSchema } from "@wellping/study-schemas/lib/schemas/StudyFile";
 
+import { cloneObject } from "./common";
+
 type EditorStream = any;
 type EditorStreams = EditorStream[];
 
@@ -203,7 +205,7 @@ function getWellPingQuestionsListFromEditorQuestionsList(
       editorQuestionsList.splice(
         i,
         1,
-        ...editorReusableQuestionBlocks[questionBlockId],
+        ...cloneObject(editorReusableQuestionBlocks[questionBlockId]),
       );
       i--; // We need to look at the replaced questions too (maybe it is also a question block).
       continue;
@@ -312,7 +314,7 @@ export function getWellPingStudyFileFromEditorObject(
   editorObject_ori: any,
 ): WellPingTypes.StudyFile {
   // Make a copy of the input so that we will not change `formData`.
-  const editorObject = JSON.parse(JSON.stringify(editorObject_ori));
+  const editorObject = cloneObject(editorObject_ori);
 
   // Delete empty objects.
   deleteEmptyObject(editorObject.studyInfo.server, "beiwe");
