@@ -1,4 +1,4 @@
-import "./global";
+import "./helpers/global";
 
 import React from "react";
 import ReactDOM from "react-dom";

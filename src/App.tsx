@@ -3,15 +3,15 @@ import Form, { UiSchema } from "@rjsf/core";
 import { saveAs } from "file-saver";
 import { JSONSchema7 } from "json-schema";
 import "./App.css";
-import { getWellPingStudyFileFromEditorObject } from "./helper";
-import { getIDValueArraySchema } from "./json-schema-helper";
+import { getWellPingStudyFileFromEditorObject } from "./helpers/export";
+import { getIDValueArraySchema } from "./helpers/json-schema";
 import {
   ID_REGEX,
   QUESTION_ID_REGEX,
   DATETIME_REGEX,
   HOURMINUTESECOND_REGEX,
   NON_EMPTY_REGEX,
-} from "./regexes";
+} from "./helpers/regexes";
 
 const VALIDATE_BUTTON_ID = "button-validate";
 const VALIDATE_AND_EXPORT_BUTTON_ID = "button-export";
