@@ -18,11 +18,15 @@
 }
 
 fieldset,
-.panel-default {
+.panel-default,
+.field-boolean {
   border: 1px solid #c0c0c0;
   border-radius: 5px;
   margin: 0 0;
   padding: 0 0 0 0.625em;
+}
+.field-boolean {
+  margin-bottom: 10px;
 }
 .panel-body {
   padding-top: 10px;
@@ -30,6 +34,7 @@ fieldset,
 legend {
   border: 1px solid #c0c0c0;
   border-radius: 5px;
+  padding: 0 5px;
 }
 
 .form-group:last-child {
