@@ -2,6 +2,7 @@ import React from "react";
 import Form, { UiSchema } from "@rjsf/core";
 import { saveAs } from "file-saver";
 import { JSONSchema7 } from "json-schema";
+import { QuestionTypeSchema as WellPingQuestionTypeSchema } from "@wellping/study-schemas/lib/schemas/Question";
 import "./App.css";
 import { getWellPingStudyFileFromEditorObject } from "./helpers/export";
 import {
@@ -136,7 +137,7 @@ function App() {
       sliderQuestion: {
         properties: {
           type: {
-            enum: ["Slider"],
+            enum: [WellPingQuestionTypeSchema.Values.Slider],
           },
           slider: {
             type: "object",
@@ -255,7 +256,7 @@ function App() {
       choicesWithSingleAnswerQuestion: {
         properties: {
           type: {
-            enum: ["ChoicesWithSingleAnswer"],
+            enum: [WellPingQuestionTypeSchema.Values.ChoicesWithSingleAnswer],
           },
           choices: {
             $ref: "#/definitions/choiceQuestion_choices",
@@ -275,7 +276,9 @@ function App() {
       choicesWithMultipleAnswersQuestion: {
         properties: {
           type: {
-            enum: ["ChoicesWithMultipleAnswers"],
+            enum: [
+              WellPingQuestionTypeSchema.Values.ChoicesWithMultipleAnswers,
+            ],
           },
           choices: {
             $ref: "#/definitions/choiceQuestion_choices",
@@ -296,7 +299,7 @@ function App() {
       yesNoQuestion: {
         properties: {
           type: {
-            enum: ["YesNo"],
+            enum: [WellPingQuestionTypeSchema.Values.YesNo],
           },
           branches: {
             type: "object",
@@ -327,7 +330,7 @@ function App() {
       howLongAgoQuestion: {
         properties: {
           type: {
-            enum: ["HowLongAgo"],
+            enum: [WellPingQuestionTypeSchema.Values.HowLongAgo],
           },
           // No other fields.
         },
@@ -336,7 +339,7 @@ function App() {
       multipleTextQuestion: {
         properties: {
           type: {
-            enum: ["MultipleText"],
+            enum: [WellPingQuestionTypeSchema.Values.MultipleText],
           },
           indexName: {
             type: "string",
@@ -414,17 +417,7 @@ function App() {
           type: {
             type: "string",
             title: "Question type",
-            enum: [
-              "Slider",
-              "ChoicesWithSingleAnswer",
-              "ChoicesWithMultipleAnswers",
-              "YesNo",
-              "MultipleText",
-              "HowLongAgo",
-              "Branch",
-              "BranchWithRelativeComparison",
-              "Wrapper",
-            ],
+            enum: WellPingQuestionTypeSchema.options,
           },
         },
         dependencies: {
