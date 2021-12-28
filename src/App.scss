@@ -32,8 +32,8 @@ fieldset,
   padding-top: 10px;
 }
 legend {
-  border: 1px solid #c0c0c0;
-  border-radius: 5px;
+  border: inherit;
+  border-radius: inherit;
   padding: 0 5px;
 }
 
@@ -43,11 +43,8 @@ legend {
   fieldset,
   .panel-default,
   .field-boolean {
-    &,
-    legend {
-      border-color: darken(#ffffff, $level * 5);
-      border-width: #{$level * 0.7}px;
-    }
+    border-color: darken(#ffffff, $level * 5);
+    border-width: #{$level * 0.7}px;
 
     @if $level < $target {
       @include border-levels-style($target, $level + 1);
