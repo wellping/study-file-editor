@@ -79,9 +79,14 @@ function processMultipleTextQuestion(
   delete editorMultipleTextQuestion.repeatedQuestions;
   editorMultipleTextQuestion.repeatedItemStartId = firstSubQuestionId;
 
-  editorMultipleTextQuestion.choices = processOptionalChoicesList(
-    editorMultipleTextQuestion.choices,
-  );
+  extractAndMergeOneOfOptions(editorMultipleTextQuestion, "dropdownChoices");
+
+  if (editorMultipleTextQuestion.dropdownChoices !== undefined) {
+    editorMultipleTextQuestion.dropdownChoices.choices =
+      processOptionalChoicesList(
+        editorMultipleTextQuestion.dropdownChoices.choices,
+      );
+  }
 
   const multipleTextQuestion: WellPingTypes.MultipleTextQuestion =
     WellPingQuestionSchema.getMultipleTextQuestionSchema({

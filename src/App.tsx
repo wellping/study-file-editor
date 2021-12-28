@@ -368,28 +368,34 @@ function App() {
             title: "Keyboard type",
             enum: KEYBOARD_TYPES,
           },
-          choices: {
-            title: "Dropdown choices",
-            oneOf: [
-              {
-                title: "Don't show dropdown",
-                type: "null",
+          dropdownChoices: getOneOfDependencySchema({
+            objectSchema: {
+              title: "Dropdown choices list",
+            },
+            options: {
+              "Do not show dropdown choices list": null,
+              "Show dropdown choices list": {
+                title: "",
+                properties: {
+                  choices: {
+                    title: "Dropdown choices",
+                    $ref: "#/definitions/choiceQuestion_choices",
+                  },
+                  forceChoice: {
+                    type: "boolean",
+                    title: "The input must be equal to one of the choices",
+                  },
+                  alwaysShowChoices: {
+                    type: "boolean",
+                    title:
+                      "Show the dropdown list even if the user hasn't typed anything yet",
+                  },
+                },
+                required: ["choices"],
               },
-              {
-                title: "Show dropdown choices",
-                $ref: "#/definitions/choiceQuestion_choices",
-              },
-            ],
-          },
-          forceChoice: {
-            type: "boolean",
-            title: "The input must be equal to one of the choices",
-          },
-          alwaysShowChoices: {
-            type: "boolean",
-            title:
-              "Show the dropdown list even if the user hasn't typed anything yet",
-          },
+            },
+            defaultOption: "Do not show dropdown choices list",
+          }),
           max: {
             type: "integer",
             minimum: 1,
