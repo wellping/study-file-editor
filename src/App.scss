@@ -26,6 +26,8 @@ fieldset,
   padding: 0 0 0 0.625em;
 }
 .field-boolean {
+  border: inherit;
+  border-radius: inherit;
   margin-bottom: 10px;
 }
 .panel-body {
@@ -41,8 +43,7 @@ legend {
 // https://stackoverflow.com/a/70501895/2603230
 @mixin border-levels-style($target, $level: 0) {
   fieldset,
-  .panel-default,
-  .field-boolean {
+  .panel-default {
     border-color: darken(#ffffff, $level * 5);
     border-width: #{$level * 0.7}px;
 
@@ -52,7 +53,7 @@ legend {
   }
 }
 // We cannot make the level too deep because otherwise the compiled CSS file will be too large.
-@include border-levels-style(6);
+@include border-levels-style(10);
 
 .form-group:last-child {
   margin-bottom: 2px;
