@@ -37,6 +37,26 @@ legend {
   padding: 0 5px;
 }
 
+// Make the borders darker as the levels become deeper.
+// https://stackoverflow.com/a/70501895/2603230
+@mixin border-levels-style($target, $level: 0) {
+  fieldset,
+  .panel-default,
+  .field-boolean {
+    &,
+    legend {
+      border-color: darken(#ffffff, $level * 5);
+      border-width: #{$level * 0.7}px;
+    }
+
+    @if $level < $target {
+      @include border-levels-style($target, $level + 1);
+    }
+  }
+}
+// We cannot make the level too deep because otherwise the compiled CSS file will be too large.
+@include border-levels-style(6);
+
 .form-group:last-child {
   margin-bottom: 2px;
 }
