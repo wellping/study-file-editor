@@ -3,7 +3,7 @@ import Form, { UiSchema } from "@rjsf/core";
 import { saveAs } from "file-saver";
 import { JSONSchema7 } from "json-schema";
 import { QuestionTypeSchema as WellPingQuestionTypeSchema } from "@wellping/study-schemas/lib/schemas/Question";
-import "./App.css";
+import "./App.scss";
 import { KEYBOARD_TYPES } from "./helpers/common";
 import { getWellPingStudyFileFromEditorObject } from "./helpers/export";
 import {
