@@ -4,6 +4,7 @@ import { saveAs } from "file-saver";
 import { JSONSchema7 } from "json-schema";
 import { QuestionTypeSchema as WellPingQuestionTypeSchema } from "@wellping/study-schemas/lib/schemas/Question";
 import "./App.css";
+import { KEYBOARD_TYPES } from "./helpers/common";
 import { getWellPingStudyFileFromEditorObject } from "./helpers/export";
 import {
   getIDValueArraySchema,
@@ -214,6 +215,7 @@ function App() {
         ],
       },
       choiceQuestion_choices: {
+        title: "Choices",
         oneOf: [
           {
             $ref: "#/definitions/choiceQuestion_choices_list_array",
@@ -229,6 +231,7 @@ function App() {
         ],
       },
       choiceQuestion_specialCasesBranches: {
+        title: "Special cases branches",
         type: "array",
         items: {
           type: "object",
@@ -246,8 +249,10 @@ function App() {
       },
       choiceQuestion_randomizeChoicesOrder: {
         type: "boolean",
+        title: "Randomize the order of the choices",
       },
       choiceQuestion_randomizeExceptForChoiceIds: {
+        title: "Keep the order of these choices",
         type: "array",
         items: {
           type: "string",
@@ -303,23 +308,26 @@ function App() {
           },
           branches: {
             type: "object",
-            title: "Branches",
+            title: "Questions to show if the user answers ...",
             properties: {
               yes: {
-                title: 'Questions to show if the user answered "Yes"',
+                title: '... "Yes"',
                 $ref: "#/definitions/listOfQuestions",
               },
               no: {
-                title: 'Questions to show if the user answered "No"',
+                title: '... "No"',
                 $ref: "#/definitions/listOfQuestions",
               },
             },
           },
           addFollowupStream: {
             type: "object",
+            title: "Use followup streams if the user answers ...",
             properties: {
               yes: {
+                title: '... "Yes"',
                 type: "string",
+                enum: streamIds,
               },
             },
           },
@@ -353,37 +361,47 @@ function App() {
           },
           placeholder: {
             type: "string",
+            title: "Placeholder of the text fields",
           },
           keyboardType: {
-            // TODO: enum
             type: "string",
+            title: "Keyboard type",
+            enum: KEYBOARD_TYPES,
           },
           choices: {
+            title: "Dropdown choices",
             oneOf: [
               {
                 title: "Don't show dropdown",
                 type: "null",
               },
               {
-                title: "Show dropdown choice",
+                title: "Show dropdown choices",
                 $ref: "#/definitions/choiceQuestion_choices",
               },
             ],
           },
           forceChoice: {
             type: "boolean",
+            title: "The input must be equal to one of the choices",
           },
           alwaysShowChoices: {
             type: "boolean",
+            title:
+              "Show the dropdown list even if the user hasn't typed anything yet",
           },
           max: {
             type: "integer",
             minimum: 1,
+            title: "Maximum number of text fields",
           },
           maxMinus: {
             type: "string",
+            title:
+              "... minus the number of answered text fields from this question ID",
           },
           repeatedQuestions: {
+            title: "Questions to show for each answered text field",
             $ref: "#/definitions/listOfQuestions",
           },
         },
@@ -417,7 +435,41 @@ function App() {
           type: {
             type: "string",
             title: "Question type",
-            enum: WellPingQuestionTypeSchema.options,
+            anyOf: WellPingQuestionTypeSchema.options.map((option) => {
+              let name: string = option;
+              switch (option) {
+                case WellPingQuestionTypeSchema.Values
+                  .ChoicesWithMultipleAnswers:
+                  name = "Choices with Multiple Answers";
+                  break;
+
+                case WellPingQuestionTypeSchema.Values.ChoicesWithSingleAnswer:
+                  name = "Choices with Single Answer";
+                  break;
+
+                case WellPingQuestionTypeSchema.Values.YesNo:
+                  name = "Yes/No";
+                  break;
+
+                case WellPingQuestionTypeSchema.Values.MultipleText:
+                  name = "Multiple Text Fields";
+                  break;
+
+                case WellPingQuestionTypeSchema.Values.HowLongAgo:
+                  name = `"How Long Ago"`;
+                  break;
+
+                case WellPingQuestionTypeSchema.Values
+                  .BranchWithRelativeComparison:
+                  name = "Branch with Relative Comparison";
+                  break;
+              }
+              return {
+                type: "string",
+                title: name,
+                enum: [option],
+              };
+            }),
           },
         },
         dependencies: {
