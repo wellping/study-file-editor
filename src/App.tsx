@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Form, { UiSchema } from "@rjsf/core";
 import { saveAs } from "file-saver";
 import { JSONSchema7 } from "json-schema";
@@ -8,6 +8,7 @@ import { KEYBOARD_TYPES } from "./helpers/common";
 import { getWellPingStudyFileFromEditorObject } from "./helpers/export";
 import {
   getIDValueArraySchema,
+  getIDValueArraySchemaWithAssignedGroup,
   getOneOfDependencySchema,
 } from "./helpers/json-schema";
 import {
@@ -16,7 +17,9 @@ import {
   DATETIME_REGEX,
   HOURMINUTESECOND_REGEX,
   NON_EMPTY_REGEX,
+  DATE_REGEX,
 } from "./helpers/regexes";
+import { useCSVReader } from "react-papaparse";
 
 const VALIDATE_BUTTON_ID = "button-validate";
 const VALIDATE_AND_EXPORT_BUTTON_ID = "button-export";
@@ -53,10 +56,10 @@ function parseLoadedEditorFileString(loadedEditorFile: string): any {
 }
 
 function getIDsFieldAsArrayAndEmptyStringIfEmpty(
-  list: { id: string | null; [key: string]: any }[] = [],
+  list: { id: string | null;[key: string]: any }[] = [],
 ): string[] {
   const keys = list
-    .map((item) => item.id ?? "") // All IDs
+    .map((item) => item.id ?? "") // All IDsliveValidate
     .filter((value) => value); // Non-null values only
   if (keys.length === 0) {
     // The enum cannot be 0 length
@@ -79,6 +82,8 @@ function saveJSONFile(fileName: string, object: any) {
 }
 
 function App() {
+  const { CSVReader } = useCSVReader();
+
   const [pingsFrequencyCount, setPingsFrequencyCount] =
     React.useState<number>(0);
   const [streamIds, setStreamIds] = React.useState<string[]>(
@@ -90,6 +95,10 @@ function App() {
   const [questionBlockIds, setQuestionBlockIds] = React.useState<string[]>(
     getIDsFieldAsArrayAndEmptyStringIfEmpty(),
   );
+
+  const [groups, setGroups] = React.useState<string[]>([""]);
+  const [showGroups, setShowGroups] = useState(false);
+  const [groupData, setGroupData] = useState<Array<string[]>>();
 
   // Note: this form data JSON is different from the Well Ping study file JSON (to facilicate easier user input).
   // Conversion with `getWellPingStudyFileJSONFromEditorJSON` is needed to get the Well Ping study file JSON.
@@ -111,7 +120,6 @@ function App() {
         newFormData?.reusableQuestionBlocks,
       ),
     );
-
     setFormData(newFormData);
   }
 
@@ -133,6 +141,28 @@ function App() {
         },
         minItems: pingsFrequencyCount,
         maxItems: pingsFrequencyCount,
+      },
+      streamsOrderOnADate: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            date: {
+              type: "string",
+              title: "Date in YYYY-MM-DD format",
+              pattern: DATE_REGEX,
+            },
+            streams: {
+              type: "array",
+              items: {
+                $ref: "#/definitions/streamSelection",
+              },
+              minItems: pingsFrequencyCount,
+              maxItems: pingsFrequencyCount,
+            },
+          },
+          required: ["date"],
+        },
       },
 
       sliderQuestion: {
@@ -476,7 +506,7 @@ function App() {
                 enum: [option],
               };
             }),
-          },
+          }
         },
         dependencies: {
           type: {
@@ -711,6 +741,10 @@ function App() {
                 title: "Same order of streams every day of the week",
                 $ref: "#/definitions/streamsOrderOnADay",
               },
+              "Streams on specific dates": {
+                title: "Streams on specific dates",
+                $ref: "#/definitions/streamsOrderOnADate",
+              },
               "Different order of streams every day of the week": {
                 title: "Different order of streams every day of the week",
                 type: "object",
@@ -896,7 +930,7 @@ function App() {
           }),
         },
       },
-      streams: getIDValueArraySchema({
+      streams: getIDValueArraySchemaWithAssignedGroup({
         objectSchema: {
           title: "Streams",
           minItems: 1,
@@ -913,6 +947,7 @@ function App() {
           title: "Stream Questions",
           $ref: "#/definitions/listOfNonEmptyQuestions",
         },
+        groups,
       }),
       extraData: {
         title: "Extra Data",
@@ -1027,7 +1062,53 @@ function App() {
         <div className="App">
           <h1 id="page-title">Well Ping Study File Editor</h1>
           <p>Please use this editor in Chrome on a desktop computer.</p>
-
+          <div className="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            <div className="panel panel-default">
+              <div className="panel-heading" role="tab" id="headingOne">
+                <h4 className="panel-title">
+                  <a role="button"
+                  onClick={() => setShowGroups(!showGroups)}>
+                    Loaded Groups
+                  </a>
+                </h4>
+              </div>
+              <div id="collapseOne" className={`panel-collapse collapse ${showGroups ? "in" : ""}`} role="tabpanel" aria-labelledby="headingOne">
+                <div className="panel-body">
+                  {groupData && <button className="btn btn-danger"
+                  onClick={() => {
+                    setGroups([""]);
+                    setGroupData(undefined);
+                    console.log("myForm", formData);
+                    if (formData.studyInfo.studyGroup){
+                      delete formData.studyInfo.studyGroup
+                      setFormData(formData);
+                    }
+                  }}
+                  >Clear loaded groups</button>}
+                  {!groupData && <p>No CSV file is loaded for groups. Use "Load Groups" button on the right to load your file.</p>}
+                  <br></br>
+                  {groupData && groupData.length>0 && groupData[0].length > 0 && <table className="table table-striped">
+                    <thead>
+                        <tr>
+                          <th>UserId</th>
+                          <th>GroupId</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {groupData.map((g) => {
+                      return (
+                        <tr>
+                          <td>{g[0]}</td>
+                          <td>{g[1]}</td>
+                        </tr>
+                      )
+                    })}
+                    </tbody>
+                  </table>}
+                </div>
+              </div>
+            </div>
+          </div>
           <Form
             schema={schema}
             uiSchema={uiSchema}
@@ -1049,9 +1130,8 @@ function App() {
                     console.log(wellPingStudyFile);
 
                     if (typeOfSubmit === VALIDATE_AND_EXPORT_BUTTON_ID) {
-                      const fileName = `wellping-export-${
-                        wellPingStudyFile.studyInfo.id
-                      }-${new Date().getTime()}`;
+                      const fileName = `wellping-export-${wellPingStudyFile.studyInfo.id
+                        }-${new Date().getTime()}`;
                       saveJSONFile(fileName, wellPingStudyFile);
                     }
                   } catch (error) {
@@ -1070,6 +1150,50 @@ function App() {
           >
             {/* Notice that we cannot programmitcally trigger validate now: https://github.com/rjsf-team/react-jsonschema-form/issues/246 */}
             <div id="right-toolbar">
+              <CSVReader
+                onUploadAccepted={(results: any) => {
+                  console.log('---------------------------');
+                  console.log(results);
+                  console.log('---------------------------');
+                  //remove the headers
+                  const data = results.data.slice(1);
+                  const groups = new Set<string>();
+                  const allGroups = new Array<Array<string>>();
+                  data.forEach((element: Array<string>) => {
+                    if (element.length >= 2) {
+                      groups.add(element[1]);
+                      allGroups.push(element);
+                    }
+                  });
+                  setShowGroups(true);
+                  setGroups(Array.from(groups));
+                  setGroupData(allGroups);
+                  if (allGroups) {
+                    const studyGroup = new Array<{userId: string, groupId: string}>();
+                    allGroups.map(x => {
+                     studyGroup.push({userId: x[0],
+                      groupId: x[1]});
+                    });
+                    setFormData({
+                      ...formData,
+                      studyInfo: {
+                        ...formData.studyInfo,
+                      studyGroup: studyGroup}
+                    }
+                    );
+                  }
+                }}
+              >{({
+                getRootProps,
+                acceptedFile,
+                ProgressBar,
+                getRemoveFileProps,
+              }: any) => (
+                <div className="right-button">
+                  <button type="button" className="btn btn-secondary" {...getRootProps()}>
+                    Load Groups
+                  </button>
+                </div>)}</CSVReader>
               <div className="right-button">
                 <button
                   type="submit"
@@ -1144,9 +1268,8 @@ function App() {
                   type="button"
                   className="btn btn-success"
                   onClick={() => {
-                    const fileName = `wellping-editor-${
-                      (formData as any)?.studyInfo?.id ?? "unknownId"
-                    }-${new Date().getTime()}`;
+                    const fileName = `wellping-editor-${(formData as any)?.studyInfo?.id ?? "unknownId"
+                      }-${new Date().getTime()}`;
                     saveJSONFile(fileName, {
                       ...WELLPING_EDITOR_SAVE_INFO_ENCLOSED,
                       ...(formData as any),

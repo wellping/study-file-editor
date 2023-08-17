@@ -315,6 +315,21 @@ function getWellPingStreamsFromEditorStreams(
   return [streams, streamsStartingQuestionIds];
 }
 
+function getWellPingStreamGroupMappingsFromEditorStreams(
+  editorStreams: EditorStreams
+): WellPingTypes.StreamGroupMapping {
+
+  const mapping: WellPingTypes.StreamGroupMapping = [];
+  for (let i=0; i<editorStreams.length; i++) {
+    mapping.push({
+      assignedGroup: editorStreams[i].assignedGroup,
+      stream: editorStreams[i].id
+    })
+  }
+
+  return mapping;
+}
+
 function getObjectFromIDValueArray<T, R>(
   array: { id: string; value: T }[] = [],
   transform: (id: string, value: T) => R,
@@ -440,10 +455,13 @@ export function getWellPingStudyFileFromEditorObject(
 
   const extraData: WellPingTypes.ExtraData = editorObject.extraData;
 
+  const streamGroupMapping : WellPingTypes.StreamGroupMapping = getWellPingStreamGroupMappingsFromEditorStreams(editorObject.streams);
+
   const studyFile: WellPingTypes.StudyFile = {
     studyInfo,
     streams,
     extraData,
+    streamGroupMapping
   };
 
   console.log(studyFile);

@@ -19,3 +19,6 @@ export const HOURMINUTESECOND_REGEX = getJSONSchemaPatternStringFromRegExp(
 export const NON_EMPTY_REGEX = getJSONSchemaPatternStringFromRegExp(
   /(.|\s)*\S(.|\s)*/, // https://stackoverflow.com/a/45933959/2603230
 );
+export const DATE_REGEX = getJSONSchemaPatternStringFromRegExp(
+  WellPingStudySchemasRegexes.DATE_REGEX,
+);

@@ -30,6 +30,44 @@ export function getIDValueArraySchema({
   };
 }
 
+export function getIDValueArraySchemaWithAssignedGroup({
+  objectSchema = {},
+  itemSchema = {},
+  idSchema = {},
+  valueSchema,
+  groups,
+}: {
+  objectSchema?: JSONSchema7;
+  itemSchema?: JSONSchema7;
+  idSchema?: JSONSchema7;
+  valueSchema: JSONSchema7;
+  groups: string[];
+}): JSONSchema7 {
+  return {
+    type: "array",
+    items: {
+      type: "object",
+      required: ["id", "value"],
+      properties: {
+        id: {
+          type: "string",
+          ...idSchema,
+        },
+        value: valueSchema,
+        assignedGroup: {
+          type: "array",
+          title: "Assigned Group",
+          items: {
+            enum: groups
+          }
+        }
+      },
+      ...itemSchema,
+    },
+    ...objectSchema,
+  };
+}
+
 export function getOneOfDependencySchema({
   objectSchema,
   propertiesBeforeOptionSchema,
